@@ -52,6 +52,9 @@ namespace Luna_GUI._Compiling
 
         public static CodeAnalysisInfo RunCodeAnalysis()
         {
+            if (!MyResourceManager.LuaCompilerInstalled)
+                new CodeAnalysisInfo { Result = CodeAnalysisResult.CodeFine };
+
             //TODO: Implement
             return new CodeAnalysisInfo {Result = CodeAnalysisResult.CodeFine};
         }

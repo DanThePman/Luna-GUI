@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq.Expressions;
 using System.Threading;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace Luna_GUI._Compiling
 {
@@ -84,6 +85,18 @@ namespace Luna_GUI._Compiling
             }
         }
 
+        public static bool LuaCompilerInstalled
+        {
+            get
+            {
+                string x86_programFilePath = Environment.Is64BitOperatingSystem
+               ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
+               : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+
+                return Directory.Exists(x86_programFilePath + "\\Lua");
+            }
+        }
+
         public static void CheckIfLuaIsInstalled()
         {
             string x86_programFilePath = Environment.Is64BitOperatingSystem
@@ -92,11 +105,7 @@ namespace Luna_GUI._Compiling
 
             if (!Directory.Exists(x86_programFilePath + "\\Lua"))
             {
-                ExractExecutableResource(Properties.Resources.LuaForWindows_v5_1_4_46,
-                    GetNameOf(() => Properties.Resources.LuaForWindows_v5_1_4_46), ".exe");
-                string setupPath = Environment.CurrentDirectory + "\\" + GetNameOf(() 
-                    => Properties.Resources.LuaForWindows_v5_1_4_46) + ".exe";
-                Process.Start(setupPath);
+                WindowManager.MainWindow.ShowMessageAsync("Warnung", "Es wurde kein Lua-Compiler gefunden");
             }
         }
     }

@@ -73,16 +73,6 @@ namespace Luna_GUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] LuaForWindows_v5_1_4_46 {
-            get {
-                object obj = ResourceManager.GetObject("LuaForWindows_v5_1_4_46", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] luna {
             get {
                 object obj = ResourceManager.GetObject("luna", resourceCulture);

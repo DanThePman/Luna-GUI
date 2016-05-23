@@ -1,8 +1,0 @@
-<snippet>
-    <content>
-<![CDATA[
-gc:drawString(${1:Text}, ${2:x}, ${3:y}, "top")
-]]>
-</content>
-	<tabTrigger>print</tabTrigger>
-</snippet>
