@@ -1,0 +1,4 @@
+c:\users\daniel\documents\visual studio 2015\Projects\Luna GUI\Luna GUI\bin\Release\Luna GUI.exe.config
+c:\users\daniel\documents\visual studio 2015\Projects\Luna GUI\Luna GUI\obj\Release\Interop.SHDocVw.dll
+c:\users\daniel\documents\visual studio 2015\Projects\Luna GUI\Luna GUI\obj\Release\Interop.Shell32.dll
+c:\users\daniel\documents\visual studio 2015\Projects\Luna GUI\Luna GUI\obj\Release\Luna GUI.csproj.ResolveComReference.cache
