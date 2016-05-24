@@ -1,15 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq.Expressions;
 using System.Threading;
-using MahApps.Metro.Controls.Dialogs;
+using Shell32;
 
 namespace Luna_GUI._Compiling
 {
     internal static class MyResourceManager
     {
+        private static int resourceLoadCount_SinceAppStart;
+
+        public static bool loadedResources { get; set; }
+
+        public static bool LuaCompilerInstalled => true; /*Nlua*/
+
         public static string GetNameOf<T>(Expression<Func<T>> property)
         {
             // ReSharper disable once PossibleNullReferenceException
@@ -24,9 +28,9 @@ namespace Luna_GUI._Compiling
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
 
-            Shell32.Shell objShell = new Shell32.Shell();
-            Shell32.Folder destinationFolder = objShell.NameSpace(folderPath);
-            Shell32.Folder sourceFile = objShell.NameSpace(zipFile);
+            var objShell = new Shell();
+            var destinationFolder = objShell.NameSpace(folderPath);
+            var sourceFile = objShell.NameSpace(zipFile);
 
             foreach (var file in sourceFile.Items())
             {
@@ -34,13 +38,7 @@ namespace Luna_GUI._Compiling
             }
         }
 
-        public delegate void OnRemoveResourceCacheH();
-        static readonly List<OnRemoveResourceCacheH> resourceRemoveFuncs = new List<OnRemoveResourceCacheH>();
-
-        public static bool loadedResources { get; set; } = false;
-        private static int resourceLoadCount_SinceAppStart = 0;
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="resource"></param>
         /// <param name="name"></param>
@@ -48,65 +46,28 @@ namespace Luna_GUI._Compiling
         /// <returns></returns>
         public static void ExractExecutableResource(byte[] resource, string name, string extension)
         {
-            Thread t = new Thread(() =>
+            var t = new Thread(() =>
             {
-                string outputPath = Environment.CurrentDirectory + "\\" + name + extension;
+                var outputPath = Environment.CurrentDirectory + "\\" + name + extension;
 
-                File.WriteAllBytes(outputPath, resource);
-
-                bool zipfile = extension == ".zip";
-                if (zipfile)
+                if (!File.Exists(outputPath))
                 {
-                    UnZip(outputPath, Environment.CurrentDirectory + "\\" + name);
+                    File.WriteAllBytes(outputPath, resource);
+
+                    var zipfile = extension == ".zip";
+                    if (zipfile)
+                    {
+                        UnZip(outputPath, Environment.CurrentDirectory + "\\" + name);
+                    }
                 }
 
-                OnRemoveResourceCacheH removeMethod = () =>
-                {
-                    File.Delete(outputPath);
-                    if (zipfile)
-                        Directory.Delete(Environment.CurrentDirectory + "\\" + name, true);
-                };
-
-                resourceRemoveFuncs.Add(removeMethod);
                 resourceLoadCount_SinceAppStart++;
 
-                if (resourceLoadCount_SinceAppStart == 3) //luna libs
+                if (resourceLoadCount_SinceAppStart == 6)
                     loadedResources = true;
             });
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
-        }
-
-        public static void ClearResourceFiles()
-        {
-            foreach (OnRemoveResourceCacheH removeFunc in resourceRemoveFuncs)
-            {
-                removeFunc();
-            }
-        }
-
-        public static bool LuaCompilerInstalled
-        {
-            get
-            {
-                string x86_programFilePath = Environment.Is64BitOperatingSystem
-               ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
-               : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-
-                return Directory.Exists(x86_programFilePath + "\\Lua");
-            }
-        }
-
-        public static void CheckIfLuaIsInstalled()
-        {
-            string x86_programFilePath = Environment.Is64BitOperatingSystem
-                ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
-                : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-
-            if (!Directory.Exists(x86_programFilePath + "\\Lua"))
-            {
-                WindowManager.MainWindow.ShowMessageAsync("Warnung", "Es wurde kein Lua-Compiler gefunden");
-            }
         }
     }
 }

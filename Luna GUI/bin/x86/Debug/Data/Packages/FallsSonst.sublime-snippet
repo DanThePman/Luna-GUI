@@ -1,0 +1,16 @@
+<snippet>
+    <content>
+<![CDATA[
+
+if ${1:Variable} ${2:Operator} ${3:Wert} then
+
+else
+
+end
+
+
+]]>
+</content>
+	<tabTrigger>FallsSonst</tabTrigger>
+	<scope>source.lua</scope>
+</snippet>

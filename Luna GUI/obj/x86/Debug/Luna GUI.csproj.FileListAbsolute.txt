@@ -1,0 +1,27 @@
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\Luna GUI.exe.config
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\Luna GUI.exe
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\Luna GUI.pdb
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\MahApps.Metro.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\NLua.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\System.Windows.Interactivity.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\WindowsInput.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\KeraLua.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\MahApps.Metro.pdb
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\MahApps.Metro.xml
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\WindowsInput.xml
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Interop.SHDocVw.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Interop.Shell32.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Luna GUI.csproj.ResolveComReference.cache
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\MainWindow.baml
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\OffsetFinderAssistent.baml
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\MainWindow.g.cs
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\OffsetFinderAssistent.g.cs
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\App.g.cs
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Luna GUI_MarkupCompile.cache
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Luna GUI_MarkupCompile.lref
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\App.baml
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Luna GUI.g.resources
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Luna_GUI.Properties.Resources.resources
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Luna GUI.csproj.GenerateResource.Cache
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Luna GUI.exe
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Luna GUI.pdb

@@ -4,12 +4,17 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
 using Luna_GUI._Compiling;
 using MahApps.Metro.Controls.Dialogs;
+using CheckBox = System.Windows.Controls.CheckBox;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Luna_GUI
 {
@@ -140,6 +145,37 @@ namespace Luna_GUI
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            //Thread debugThread = new Thread(() =>
+            //{
+            //    while (true)
+            //    {
+            //        if (Keyboard.IsKeyDown(Key.F10))
+            //        {
+            //            var codeAnalysis = CompilingAnalysis.RunCodeAnalysis();
+            //            if (codeAnalysis.Result == CompilingAnalysis.CodeAnalysisResult.CodeFine)
+            //            {
+            //                //tnsOutputPath = CompilingAnalysis.CompileLuaFile();
+            //                MessageBox.Show("fineee");
+            //            }
+            //            else
+            //            {
+            //                string compilingWarning = string.Join("\n", codeAnalysis.Announcements.ToArray());
+            //                var messageResult = MessageBox.Show("Es wurden folgende Code-Warnungen endeckt:\n" +
+            //                    compilingWarning + "\n\nTrotzdem kompilieren?", "Warnung", MessageBoxButton.YesNo);
+
+            //                if (messageResult == MessageBoxResult.Yes)
+            //                {
+            //                    //tnsOutputPath = CompilingAnalysis.CompileLuaFile();
+            //                    MessageBox.Show("fineee");
+            //                }
+            //            }
+            //        }
+            //    }
+            //});
+            //debugThread.SetApartmentState(ApartmentState.STA);
+            //debugThread.Start();
+            
+
             WindowManager.MainWindow = this;
 
             if (!Directory.Exists(FileManager._extensionPath))
@@ -149,7 +185,6 @@ namespace Luna_GUI
             }
 
             bgWorker.RunWorkerAsync();
-            MyResourceManager.CheckIfLuaIsInstalled();
         }
 
         /// <summary>
@@ -292,12 +327,19 @@ namespace Luna_GUI
                     this.ShowMessageAsync("Fehler", "Positionen nicht gesetzt. Bitte starte den Assistenten");
             }
 
+
             MyResourceManager.ExractExecutableResource(Properties.Resources.libeay32,
                 MyResourceManager.GetNameOf(() => Properties.Resources.libeay32), ".dll");
             MyResourceManager.ExractExecutableResource(Properties.Resources.luna,
                 MyResourceManager.GetNameOf(() => Properties.Resources.luna), ".exe");
             MyResourceManager.ExractExecutableResource(Properties.Resources.src,
                 MyResourceManager.GetNameOf(() => Properties.Resources.src), ".zip");
+            MyResourceManager.ExractExecutableResource(Properties.Resources.lua52,
+                MyResourceManager.GetNameOf(() => Properties.Resources.lua52), ".dll");
+            MyResourceManager.ExractExecutableResource(Properties.Resources.KeraLua,
+                MyResourceManager.GetNameOf(() => Properties.Resources.KeraLua), ".dll");
+            MyResourceManager.ExractExecutableResource(Properties.Resources.NLua,
+                MyResourceManager.GetNameOf(() => Properties.Resources.NLua), ".dll");
         }
 
         private bool CheckPositionDefinitions()
@@ -350,7 +392,6 @@ namespace Luna_GUI
 
         private void mainWindow_Closing(object sender, CancelEventArgs e)
         {
-            MyResourceManager.ClearResourceFiles();
         }
     }
 }

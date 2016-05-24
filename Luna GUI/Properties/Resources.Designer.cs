@@ -63,6 +63,16 @@ namespace Luna_GUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] KeraLua {
+            get {
+                object obj = ResourceManager.GetObject("KeraLua", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] libeay32 {
             get {
                 object obj = ResourceManager.GetObject("libeay32", resourceCulture);
@@ -73,9 +83,29 @@ namespace Luna_GUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] lua52 {
+            get {
+                object obj = ResourceManager.GetObject("lua52", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] luna {
             get {
                 object obj = ResourceManager.GetObject("luna", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] NLua {
+            get {
+                object obj = ResourceManager.GetObject("NLua", resourceCulture);
                 return ((byte[])(obj));
             }
         }

@@ -54,9 +54,16 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="KeraLua, Version=1.3.2.0, Culture=neutral, PublicKeyToken=04d04586786c6f34, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Downloads\NLua.Win32\NLua.Win32\net40\KeraLua.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=1.2.4.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net40\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="NLua">
+      <HintPath>..\..\..\..\..\Downloads\NLua.Win32\NLua.Win32\net40\NLua.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -168,6 +175,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\luna.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\lua52.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\KeraLua.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NLua.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

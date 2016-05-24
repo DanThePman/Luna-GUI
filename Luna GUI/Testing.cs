@@ -193,7 +193,7 @@ namespace Luna_GUI
                 {
                     string compilingWarning = string.Join("\n", codeAnalysis.Announcements.ToArray());
                     var messageResult = MessageBox.Show("Es wurden folgende Code-Warnungen endeckt:\n" +
-                        compilingWarning + "\n\nTrotzdem kompilieren?", "Warnung", MessageBoxButtons.YesNo);
+                        compilingWarning + "\n\nTrotzdem kompilieren?", "Warnung", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
                     if (messageResult == DialogResult.Yes)
                     {

@@ -1,0 +1,105 @@
+<snippet>
+    <content>
+<![CDATA[
+
+
+local w_letterPositionOffsets  = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
+local w_letters ={ "G", "Ü", "N", "T", "E", "R", "Z",      "T", "O", "L", "L", "E", "S",        "F", "R", "A", "M", "E", "W", "O", "R", "K" }
+local LETTER_COUNT = 22
+
+
+
+local w_MAX_STEP_FIRST = 190
+local w_MAX_STEP_SECOND = platform.window:width() + 20
+local accelerate = false
+local MAX_LETTER_DISTANCE_ACCELERATE = 20
+local MAX_LETTER_DISTANCE_NO_ACCELERATE = MAX_LETTER_DISTANCE_ACCELERATE - 
+                                                w_letterPositionOffsets[1] * MAX_LETTER_DISTANCE_ACCELERATE / w_MAX_STEP_FIRST
+local smoothOutDistance = 20
+local earlierAccelerationValue = 50 --at least
+
+local StdAccelerationValue = 3 --at accelerate = false
+local accelerationValue = 15
+
+
+local currentLetterIndex
+
+function on.timer() --fires automatically
+    
+    for currentIndexChanger = 1,LETTER_COUNT,1 do       
+            if not accelerate then --accelerate = false
+                            MAX_LETTER_DISTANCE_NO_ACCELERATE = MAX_LETTER_DISTANCE_ACCELERATE - 
+                                                            w_letterPositionOffsets[1] * MAX_LETTER_DISTANCE_ACCELERATE / w_MAX_STEP_FIRST
+                
+                if (currentIndexChanger == 1) or 
+                    (currentIndexChanger > 1 and w_letterPositionOffsets[currentIndexChanger - 1] - w_letterPositionOffsets[currentIndexChanger] >= 
+                        MAX_LETTER_DISTANCE_NO_ACCELERATE) then --------------------------------------------------------------------manage letter distance
+                        
+                           local slowDownFactor = w_letterPositionOffsets[currentIndexChanger] * 0.01315789473
+                           
+                           if currentIndexChanger < LETTER_COUNT and slowDownFactor >= 2.5 then
+                                slowDownFactor = slowDownFactor - 1
+                           end
+                    
+                        w_letterPositionOffsets[currentIndexChanger] = w_letterPositionOffsets[currentIndexChanger] + StdAccelerationValue - slowDownFactor
+                        
+                        if w_letterPositionOffsets[currentIndexChanger] == w_letterPositionOffsets[LETTER_COUNT] and w_letterPositionOffsets[currentIndexChanger] >
+                                    w_MAX_STEP_FIRST - earlierAccelerationValue then
+                            accelerate = true
+                        end
+                    
+                end
+            
+            
+            else --accelerate == true
+            
+                
+                if (currentIndexChanger == 1) or  ----------manage letter distance
+                (currentIndexChanger > 1 and w_letterPositionOffsets[currentIndexChanger - 1] - w_letterPositionOffsets[currentIndexChanger] >= MAX_LETTER_DISTANCE_ACCELERATE) then
+                    
+                    local speedUpFactor = w_letterPositionOffsets[currentIndexChanger] * 0.01315789473
+                    
+                    w_letterPositionOffsets[currentIndexChanger] = w_letterPositionOffsets[currentIndexChanger] + accelerationValue + (speedUpFactor)
+                    if w_letterPositionOffsets[currentIndexChanger] == w_letterPositionOffsets[LETTER_COUNT] and w_letterPositionOffsets[currentIndexChanger] > w_MAX_STEP_SECOND then
+                        timer.stop()
+                        checkedWelcome = true
+                    end  
+                
+                end                                                            
+            end
+        platform.window:invalidate()
+    endda
+
+   
+end --endfunc
+
+function DoWelcome(gc)
+
+timer.start(0.01)
+
+--show letters only
+for i = 1, LETTER_COUNT, 1 do  
+    
+    local travelDistance = w_MAX_STEP_FIRST
+    
+        if i < LETTER_COUNT then
+            travelDistance = travelDistance + smoothOutDistance
+        end
+    
+   if (w_letterPositionOffsets[i] <= travelDistance and not accelerate) or (accelerate and w_letterPositionOffsets[i] <= w_MAX_STEP_SECOND) then
+        gc:drawString(w_letters[i]         , platform.window:width() + 10 - w_letterPositionOffsets[i]                , platform.window:height() / 2 ,"middle")
+   end
+end
+--show letters only
+
+end
+
+function on.paint(gc)
+	DoWelcome(gc)
+end
+
+
+]]>
+</content>
+	<tabTrigger>AppInit</tabTrigger>
+</snippet>
