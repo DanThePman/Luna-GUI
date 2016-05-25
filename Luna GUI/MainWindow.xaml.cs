@@ -145,36 +145,10 @@ namespace Luna_GUI
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //Thread debugThread = new Thread(() =>
-            //{
-            //    while (true)
-            //    {
-            //        if (Keyboard.IsKeyDown(Key.F10))
-            //        {
-            //            var codeAnalysis = CompilingAnalysis.RunCodeAnalysis();
-            //            if (codeAnalysis.Result == CompilingAnalysis.CodeAnalysisResult.CodeFine)
-            //            {
-            //                //tnsOutputPath = CompilingAnalysis.CompileLuaFile();
-            //                MessageBox.Show("fineee");
-            //            }
-            //            else
-            //            {
-            //                string compilingWarning = string.Join("\n", codeAnalysis.Announcements.ToArray());
-            //                var messageResult = MessageBox.Show("Es wurden folgende Code-Warnungen endeckt:\n" +
-            //                    compilingWarning + "\n\nTrotzdem kompilieren?", "Warnung", MessageBoxButton.YesNo);
-
-            //                if (messageResult == MessageBoxResult.Yes)
-            //                {
-            //                    //tnsOutputPath = CompilingAnalysis.CompileLuaFile();
-            //                    MessageBox.Show("fineee");
-            //                }
-            //            }
-            //        }
-            //    }
-            //});
-            //debugThread.SetApartmentState(ApartmentState.STA);
-            //debugThread.Start();
-            
+            if (Testing.DebugMode)
+            {
+                CallDebugThread();
+            }
 
             WindowManager.MainWindow = this;
 
@@ -184,7 +158,41 @@ namespace Luna_GUI
                 return;
             }
 
-            bgWorker.RunWorkerAsync();
+            if (!Testing.DebugMode) //fill data grid
+                bgWorker.RunWorkerAsync();
+        }
+
+        private void CallDebugThread()
+        {
+            Thread debugThread = new Thread(() =>
+            {
+                while (true)
+                {
+                    if (Keyboard.IsKeyDown(Key.F10))
+                    {
+                        var codeAnalysis = CompilingAnalysis.RunCodeAnalysis();
+                        if (codeAnalysis.Result == CompilingAnalysis.CodeAnalysisResult.CodeFine)
+                        {
+                            //tnsOutputPath = CompilingAnalysis.CompileLuaFile();
+                            MessageBox.Show("fineee");
+                        }
+                        else
+                        {
+                            string compilingWarning = string.Join("\n", codeAnalysis.Announcements.ToArray());
+                            var messageResult = MessageBox.Show("Es wurden folgende Code-Warnungen endeckt:\n" +
+                                compilingWarning + "\n\nTrotzdem kompilieren?", "Warnung", MessageBoxButton.YesNo);
+
+                            if (messageResult == MessageBoxResult.Yes)
+                            {
+                                //tnsOutputPath = CompilingAnalysis.CompileLuaFile();
+                                MessageBox.Show("fineee");
+                            }
+                        }
+                    }
+                }
+            });
+            debugThread.SetApartmentState(ApartmentState.STA);
+            debugThread.Start();
         }
 
         /// <summary>
@@ -323,7 +331,7 @@ namespace Luna_GUI
             {
                 if (!CheckPositionDefinitions())
                     OffsetReader.FillOffsetList();
-                else
+                else if (!Testing.DebugMode)
                     this.ShowMessageAsync("Fehler", "Positionen nicht gesetzt. Bitte starte den Assistenten");
             }
 

@@ -14,7 +14,9 @@ using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 namespace Luna_GUI
 {
     internal static class Testing
-    { 
+    {
+        public static bool DebugMode = true;
+
         public static string lunaPath = Environment.CurrentDirectory + "\\" + "luna.exe";
         public static string luapath { get; set; }
         public static string explorerPathToLuaFile { get; set; }
@@ -29,42 +31,57 @@ namespace Luna_GUI
         /// <returns></returns>
         public static string OnSelectLuaFile()
         {
-            OpenFileDialog dialog = new OpenFileDialog
+            try
             {
-                Multiselect = false, AddExtension = true, Filter = "Lua Code (.lua)|*.lua"
-            };
-            bool? result = dialog.ShowDialog();
+                OpenFileDialog dialog = new OpenFileDialog
+                {
+                    Multiselect = false,
+                    AddExtension = true,
+                    Filter = "Lua Code (.lua)|*.lua"
+                };
+                bool? result = dialog.ShowDialog();
 
-            if (!result.HasValue)
-            {
-                WindowManager.MainWindow.ShowMessageAsync("Fehler", "Es gab einen Fehler bei der Auswahl der Luadatei..");
-                return String.Empty;
+                if (!result.HasValue)
+                {
+                    WindowManager.MainWindow.ShowMessageAsync("Fehler",
+                        "Es gab einen Fehler bei der Auswahl der Luadatei..");
+                    return string.Empty;
+                }
+
+                int s = dialog.FileName.LastIndexOf("\\") + 1;
+                int e = dialog.FileName.Length;
+
+                string luafileNameWithExtension = dialog.FileName.Substring(s, e - s);
+                int e2 = luafileNameWithExtension.IndexOf(".");
+
+                luapath = dialog.FileName;
+                luafilenameNoExtension = luafileNameWithExtension.Substring(0, e2);
+
+                #region setup explorer for drag and dop
+
+                Thread t = new Thread(() =>
+                {
+                    CloseExplorerWindows();
+
+                    Thread.Sleep(1000);
+
+                    explorerPathToLuaFile = luapath.Substring(0, luapath.LastIndexOf("\\"));
+                    Process.Start("explorer.exe", explorerPathToLuaFile);
+                });
+                if (!DebugMode)
+                    t.Start();
+                WindowManager.BringWindowToFront(WindowManager.MainWindow.Title);
+
+                #endregion setup explorer for drag and dop
+
+                return luafileNameWithExtension;
             }
-
-            int s = dialog.FileName.LastIndexOf("\\") + 1;
-            int e = dialog.FileName.Length;
-
-            string luafileNameWithExtension = dialog.FileName.Substring(s, e - s);
-            int e2 = luafileNameWithExtension.IndexOf(".");
-
-            luapath = dialog.FileName;
-            luafilenameNoExtension = luafileNameWithExtension.Substring(0, e2);
-
-            #region setup explorer for drag and dop
-            Thread t = new Thread(() =>
+            catch
             {
-                CloseExplorerWindows();
-
-                Thread.Sleep(1000);
-
-                explorerPathToLuaFile = luapath.Substring(0, luapath.LastIndexOf("\\"));
-                Process.Start("explorer.exe", explorerPathToLuaFile);
-            });
-            t.Start();
-            WindowManager.BringWindowToFront(WindowManager.MainWindow.Title);
-            #endregion setup explorer for drag and dop
-
-            return luafileNameWithExtension;
+                WindowManager.MainWindow.ShowMessageAsync("Fehler",
+                        "Es gab einen Fehler bei der Auswahl der Luadatei..");
+                return string.Empty;
+            }
         }
 
 

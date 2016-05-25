@@ -189,61 +189,84 @@ namespace Luna_GUI._Compiling
             return varname;
         }
 
+        static bool IsInMethodScope(this string declLine, List<string> luaLines, int declIndex)
+        {
+            return SearchFunctionStart(luaLines, declIndex) != -1;
+        }
+
         static List<string> CheckDeclarationIssues(this List<string> luaLines)
         {
             List<string> issues = new List<string>();
 
             List<string> variableNames = new List<string>();
-            List<string> variableDeclarationLines = luaLines.Where(currentLine =>
+            List<string> variableDeclarationLines = new List<string>();
+            for (int i = 0; i < luaLines.Count; i++)
             {
-                int indexOfEqual = currentLine.IndexOf("=");
-                bool isVarSet = currentLine.Contains("=") && currentLine.Count(x => x == '=') == 1 &&
-                    currentLine.Any(charr => currentLine.IndexOf(charr) < indexOfEqual);
+                string luaLine = luaLines[i];
+                int indexOfEqual = luaLine.IndexOf("=");
+                bool isVarSet = luaLine.Contains("=") && luaLine.Count(x => x == '=') == 1 &&
+                                luaLine.Any(charr => luaLine.IndexOf(charr) < indexOfEqual);
 
-                if (isVarSet)
+                Func<bool> alreadyDeclaredGlobally = () =>
                 {
-                    variableNames.Add(currentLine.GetVariableName());
+                    for (int j = 0; j < luaLines.Count; j++)
+                    {
+                        if (i == j) continue;
+
+                        string luaLine2 = luaLines[j];
+                        int indexOfEqual2 = luaLine2.IndexOf("=");
+                        bool isVarSet2 = luaLine2.Contains("=") && luaLine2.Count(x => x == '=') == 1 &&
+                                        luaLine2.Any(charr => luaLine2.IndexOf(charr) < indexOfEqual2);
+
+                        if (isVarSet2 && luaLine2 == luaLine) /*other delcaration found*/
+                        {
+                            if (!luaLine2.IsInMethodScope(luaLines, j))
+                                return true;
+                        }
+                    }
+
+                    return false;
+                };
+
+                if (isVarSet && !alreadyDeclaredGlobally())
+                {
+                    variableNames.Add(luaLine.GetVariableName());
+                    variableDeclarationLines.Add(luaLine);
                 }
+            }
 
-                return isVarSet;
-            }).ToList();
-
-            Dictionary<string, string> varNames = new Dictionary<string, string>();
-            foreach (string variableUseLine in luaLines.Where(luaLine =>
+            foreach (string variableUseLine in luaLines)
             {
-                string varName = variableNames.Where(var =>
+                List<string> varNameOccurrencesInLuaLine = variableNames.Where(var =>
                 {
-                    if (!luaLine.Contains(var))
+                    if (!variableUseLine.Contains(var))
                         return false;
 
-                    char oneIndexLowerThanVarStartIndex = luaLine.IndexOf(var) != 0 ? luaLine[luaLine.IndexOf(var) - 1] : '(';
+                    char oneIndexLowerThanVarStartIndex = variableUseLine.IndexOf(var) != 0 ? 
+                        variableUseLine[variableUseLine.IndexOf(var) - 1] : '(';
 
                     /*varname not randomly in unknown string included*/
                     bool varNameNotInText = Regex.Matches(oneIndexLowerThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0 &&
-                        Regex.Matches(luaLine[luaLine.IndexOf(var) + var.Length].ToString(), @"[a-zA-Z]").Count == 0; //e.g. function hELLO()...
+                        Regex.Matches(variableUseLine[variableUseLine.IndexOf(var) + var.Length].ToString(), @"[a-zA-Z]").Count == 0; //e.g. function hELLO()...
 
                     return varNameNotInText;
-                }).FirstOrDefault();
+                }).ToList();
 
-                if (varName == null) return false;
-
-                bool notDeclLineItself = variableDeclarationLines.All(x => !(x.GetVariableName() == varName && x == luaLine));
-
-                if (notDeclLineItself)
-                    varNames.Add(luaLine, varName);
-                /*not the decl line itself*/
-                return notDeclLineItself;
-            }))
-            {
-                int currIndex = luaLines.FindIndex(x => x == variableUseLine);
-
-                string varname = varNames.First(x => x.Key == variableUseLine).Value;
-                string declLine = variableDeclarationLines.First(x => x.GetVariableName() == varname);
-                if (declLine.IsInOtherMethodScope(luaLines, variableUseLine))
+                foreach (string varNameOccurrenceInLine in varNameOccurrencesInLuaLine)
                 {
-                    string varName = variableNames.First(variableUseLine.Contains);
-                    issues.Add("'"  + varName + "' => [CompilingAnalysis] The variable's declaration is not reachable at '" +
-                        variableUseLine + "'");
+                    bool declLineItself = variableDeclarationLines.Any(x =>
+                            x.GetVariableName() == varNameOccurrenceInLine && x == variableUseLine);
+
+                    if (declLineItself)
+                        continue;
+
+                    string declLine = variableDeclarationLines.First(x => x.GetVariableName() == varNameOccurrenceInLine);
+                    if (declLine.IsInOtherMethodScope(luaLines, variableUseLine))
+                    {
+                        string varName = variableNames.First(variableUseLine.Contains);
+                        issues.Add("'" + varName + "' => [CompilingAnalysis] The variable's declaration is not reachable at '" +
+                            variableUseLine + "'");
+                    }
                 }
             }
 
@@ -253,7 +276,7 @@ namespace Luna_GUI._Compiling
         public static CodeAnalysisInfo RunCodeAnalysis()
         {
             var lines = GetLuaLines();
-            lines = lines.ReplaceEvents();
+            lines = lines.ReplaceEvents().Select(x => x.Replace("\t", "")).ToList();
 
             List<string> declIssues = CheckDeclarationIssues(lines);
             List<string> conversionIssues = CheckConversionIssues(lines);
