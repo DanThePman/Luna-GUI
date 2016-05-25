@@ -303,7 +303,8 @@ namespace Luna_GUI._Compiling
                 }
                 catch (DllNotFoundException)
                 {
-                    MessageBox.Show("Windows XP kann lua52.dll nicht aufrufen..Codeanalyse fehgeschlagen..Wow");
+                    MessageBox.Show("lua52.dll nicht aufrufbar\n'VS 2012 redistributable' nicht installiert!", "Fehler",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return new CodeAnalysisInfo {Result = CodeAnalysisResult.CodeFine};
                 }
                 catch (Exception _errorMessage)
