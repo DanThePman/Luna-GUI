@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using WindowsInput;
@@ -15,7 +16,9 @@ namespace Luna_GUI
 {
     internal static class Testing
     {
-        public static bool DebugMode = true;
+        public static bool DebugMode =>
+            WindowManager.MainWindow.GetType().Assembly.GetCustomAttributes(false).
+            OfType<DebuggableAttribute>().Select(da => da.IsJITTrackingEnabled).FirstOrDefault();
 
         public static string lunaPath = Environment.CurrentDirectory + "\\" + "luna.exe";
         public static string luapath { get; set; }

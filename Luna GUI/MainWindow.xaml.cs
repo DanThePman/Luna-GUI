@@ -145,12 +145,12 @@ namespace Luna_GUI
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            WindowManager.MainWindow = this;
+
             if (Testing.DebugMode)
             {
                 CallDebugThread();
             }
-
-            WindowManager.MainWindow = this;
 
             if (!Directory.Exists(FileManager._extensionPath))
             {

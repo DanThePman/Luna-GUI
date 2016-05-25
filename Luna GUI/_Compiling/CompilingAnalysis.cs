@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
 using MahApps.Metro.Controls.Dialogs;
 using NLua;
 
@@ -157,7 +156,7 @@ namespace Luna_GUI._Compiling
                 int sp = luaLine.IndexOf("tonumber(") + 9;
                 int ep = luaLine.IndexOf(")", sp);
 
-                string num_str = luaLine.Substring(sp, ep - sp).Replace("\"", "");
+                string num_str = luaLine.Substring(sp, ep - sp).Replace("\"", "").Replace(" ", "");
 
                 try {Convert.ToDouble(num_str);}
                 catch //num_str is a variable => failing to convert
@@ -170,7 +169,7 @@ namespace Luna_GUI._Compiling
                     {
                         if (variableLine.IsInOtherMethodScope(luaLines, luaLine))
                             issues.Add(variableLine + "=> [CompilingAnalysis] Number not declared in same function at '" +
-                                luaLine + "'");
+                                       luaLine + "'");
                     }
 
                     if (luaLines.All(x => !(x.Contains(num_str) && x.Contains("=") && x.IndexOf(num_str) < x.IndexOf("="))))
