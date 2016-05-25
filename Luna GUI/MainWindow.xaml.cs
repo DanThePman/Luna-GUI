@@ -113,6 +113,9 @@ namespace Luna_GUI
 
         public MainWindow()
         {
+            AppDomain.CurrentDomain.UnhandledException +=
+                (sender, args) => MessageBox.Show(args.ExceptionObject.ToString());
+
             InitializeComponent();
 
             bgWorker.DoWork += (sender, args) =>
@@ -123,23 +126,30 @@ namespace Luna_GUI
 
             bgWorker.RunWorkerCompleted += (o, args) =>
             {
-                progress1.Visibility = Visibility.Collapsed;
-                LocalSnippetCollection.Clear();
-
-                foreach (FileManager.CodeSnippetComparison snip in listCodeSnippetComparisons)
+                try
                 {
-                    string snipName = snip.snippetName;
-                    snipName = snipName.Substring(0, snipName.IndexOf(".sublime-snippet"));
+                    progress1.Visibility = Visibility.Collapsed;
+                    LocalSnippetCollection.Clear();
 
-                    LocalSnippetCollection.Add(
-                        new LocalDataGidSnippet(snipName, snip.isMissing, snip.gotRemoved, snip.codeChanged,
-                            snip.codeChanged ? snip._codeChanges.Count : 0));
+                    foreach (FileManager.CodeSnippetComparison snip in listCodeSnippetComparisons)
+                    {
+                        string snipName = snip.snippetName;
+                        snipName = snipName.Substring(0, snipName.IndexOf(".sublime-snippet"));
+
+                        LocalSnippetCollection.Add(
+                            new LocalDataGidSnippet(snipName, snip.isMissing, snip.gotRemoved, snip.codeChanged,
+                                snip.codeChanged ? snip._codeChanges.Count : 0));
+                    }
+
+                    localSnippetGrid.ItemsSource = LocalSnippetCollection;
+
+                    if (listCodeSnippetComparisons.All(x => x.uptodate))
+                        this.ShowMessageAsync("Information", "Alle Code-Snippets sind aktuell");
                 }
-
-                localSnippetGrid.ItemsSource = LocalSnippetCollection;
-
-                if (listCodeSnippetComparisons.All(x => x.uptodate))
-                    this.ShowMessageAsync("Information", "Alle Code-Snippets sind aktuell");
+                catch
+                {
+                    //Windows XP crash here
+                }
             };
         }
 
@@ -158,7 +168,7 @@ namespace Luna_GUI
                 return;
             }
 
-            if (!Testing.DebugMode) //fill data grid
+            if (!Testing.DebugMode)//fill data grid
                 bgWorker.RunWorkerAsync();
         }
 

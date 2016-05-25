@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using MahApps.Metro.Controls.Dialogs;
 using NLua;
 
@@ -294,11 +295,16 @@ namespace Luna_GUI._Compiling
                     sw.Close();
                 }
 
-                Lua state = new Lua();
                 string errorMessage = "";
                 try
                 {
+                    Lua state = new Lua();
                     state.DoFile(debugPath);
+                }
+                catch (DllNotFoundException)
+                {
+                    MessageBox.Show("Windows XP kann lua52.dll nicht aufrufen..Codeanalyse fehgeschlagen..Wow");
+                    return new CodeAnalysisInfo {Result = CodeAnalysisResult.CodeFine};
                 }
                 catch (Exception _errorMessage)
                 {
