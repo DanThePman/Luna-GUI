@@ -329,7 +329,9 @@ namespace Luna_GUI._Compiling
                     return false;
                 };
 
-                if ((isVarSet || luaLine.Contains("local")) && !alreadyDeclaredGlobally())
+                if ((isVarSet || 
+                    (luaLine.Contains("local") && !luaLine.Contains("function")) )
+                    && !alreadyDeclaredGlobally())
                 {
                     variableNames.Add(luaLine.GetVariableName());
                     variableDeclarationLines.Add(luaLine);
@@ -548,7 +550,7 @@ namespace Luna_GUI._Compiling
             catch
             {
                 //codeAnalysis fail
-                WindowManager.MainWindow.ShowMessageAsync("Information", "CodeAnalyse fehlgeschlagen..Kompilierung wird fortgesetzt.");
+                WindowManager.MainWindow.ShowMessageAsync("Information", "CodeAnalyse fehlgeschlagen..Luna-Kompilierung wird fortgesetzt.");
                 return new CodeAnalysisInfo
                 {
                     Result = CodeAnalysisResult.CodeFine,
