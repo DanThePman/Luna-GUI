@@ -4,10 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using MahApps.Metro.Controls.Dialogs;
 using MoonSharp.Interpreter;
-using NLua;
 
 namespace Luna_GUI._Compiling
 {
@@ -536,12 +534,11 @@ namespace Luna_GUI._Compiling
             lines = lines.ReplaceEvents().Select(x => x.Replace("\t", "")).ToList();
             List<string> declIssues = CheckDeclarationIssues(lines);
 
+            List<string> funcAttributeErros = ConvertFunctionAttributes(ref lines);
+            List<string> fieldAttributeErros = ConvertFieldAttributes(ref lines);
+
             try
             {
-                List<string> funcAttributeErros = ConvertFunctionAttributes(ref lines);
-                List<string> fieldAttributeErros = ConvertFieldAttributes(ref lines);
-
-                
                 List<string> conversionIssues = CheckConversionIssues(lines);
                 declIssues.AddRange(conversionIssues);
                 declIssues.AddRange(funcAttributeErros);
@@ -550,13 +547,7 @@ namespace Luna_GUI._Compiling
             catch
             {
                 //codeAnalysis fail
-                WindowManager.MainWindow.ShowMessageAsync("Information", "CodeAnalyse fehlgeschlagen..Luna-Kompilierung wird fortgesetzt.");
-                return new CodeAnalysisInfo
-                {
-                    Result = CodeAnalysisResult.CodeFine,
-                    Announcements = new List<string>(),
-                    LuaLines = GetLuaLines()
-                };
+                WindowManager.MainWindow.ShowMessageAsync("Information", "CodeAnalyse fehlgeschlagen..Lua->Luna->Kompilierung wird fortgesetzt.");
             }
 
             #region through the compiler

@@ -1,10 +1,8 @@
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\Luna GUI.exe.config
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\Luna GUI.exe
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\Luna GUI.pdb
-C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\KeraLua.dll
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\MahApps.Metro.dll
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\MoonSharp.Interpreter.dll
-C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\NLua.dll
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\System.Windows.Interactivity.dll
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\WindowsInput.dll
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Release\MahApps.Metro.pdb
@@ -28,4 +26,3 @@ C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Release\Luna GUI.csproj.GenerateResource.Cache
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Release\Luna GUI.exe
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Release\Luna GUI.pdb
-C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Release\Luna GUI.csprojResolveAssemblyReference.cache
