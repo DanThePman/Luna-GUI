@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
 using Luna_GUI._Compiling;
@@ -18,7 +17,8 @@ namespace Luna_GUI
     {
         public static bool DebugMode => 
             WindowManager.MainWindow.GetType().Assembly.GetCustomAttributes(false).
-                OfType<DebuggableAttribute>().Select(da => da.IsJITTrackingEnabled).FirstOrDefault();
+                OfType<DebuggableAttribute>().Select(da => da.IsJITTrackingEnabled).FirstOrDefault() ||
+            File.Exists(Environment.CurrentDirectory + "\\LunaGUI.debug");
 
         public static string lunaPath = Environment.CurrentDirectory + "\\" + "luna.exe";
         public static string luapath { get; set; }
@@ -207,17 +207,20 @@ namespace Luna_GUI
                 var codeAnalysis = CompilingAnalysis.RunCodeAnalysis();
                 if (codeAnalysis.Result == CompilingAnalysis.CodeAnalysisResult.CodeFine)
                 {
-                    tnsOutputPath = CompilingAnalysis.CompileLuaFile();
+                    tnsOutputPath = CompilingAnalysis.CompileLuaFile(codeAnalysis.GetLuaLinesFile());
+                    codeAnalysis.RemoveLunaFile();
                 }
                 else
                 {
                     string compilingWarning = string.Join("\n", codeAnalysis.Announcements.ToArray());
-                    var messageResult = MessageBox.Show("Es wurden folgende Code-Warnungen endeckt:\n" +
-                        compilingWarning + "\n\nTrotzdem kompilieren?", "Warnung", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    WindowManager.SetForegroundWindow(WindowManager.MainWindow.Title);
+                    var messageResult = WindowManager.MainWindow.ShowMessageAsync("Warnung", "Es wurden folgende Code-Warnungen endeckt:\n" +
+                        compilingWarning + "\n\nTrotzdem kompilieren?", MessageDialogStyle.AffirmativeAndNegative).Result;
 
-                    if (messageResult == DialogResult.Yes)
+                    if (messageResult == MessageDialogResult.Affirmative)
                     {
-                        tnsOutputPath = CompilingAnalysis.CompileLuaFile();
+                        tnsOutputPath = CompilingAnalysis.CompileLuaFile(codeAnalysis.GetLuaLinesFile());
+                        codeAnalysis.RemoveLunaFile();
                     }
                     else return;
                 }

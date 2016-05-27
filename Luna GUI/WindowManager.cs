@@ -30,6 +30,11 @@ namespace Luna_GUI
         [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        public static void SetForegroundWindow(string caption)
+        {
+            SetForegroundWindow(FindWindow(null, caption));
+        }
+
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr handle, int nCmdShow);
 

@@ -63,7 +63,7 @@ namespace Luna_GUI._Compiling
 
                 resourceLoadCount_SinceAppStart++;
 
-                if (resourceLoadCount_SinceAppStart == 6)
+                if (resourceLoadCount_SinceAppStart == 3)
                     loadedResources = true;
             });
             t.SetApartmentState(ApartmentState.STA);

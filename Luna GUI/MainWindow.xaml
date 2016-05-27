@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
-        Title="Luna GUI" Height="350" Width="525" Loaded="mainWindow_Loaded" ResizeMode="CanMinimize" Closing="mainWindow_Closing">
+        Title="Luna GUI" Height="350" Width="525" Loaded="mainWindow_Loaded" ResizeMode="CanMinimize">
     <Grid>
         <Controls:MetroAnimatedTabControl x:Name="tabControl" HorizontalAlignment="Left" Height="321" VerticalAlignment="Top" Width="519" SelectedIndex="0">
             <TabItem Header="Menu" Margin="10,10,-10,-10" HorizontalAlignment="Left" Width="80">
@@ -52,18 +52,12 @@
                 <Grid Margin="0,15,0,-1">
                     <CheckBox x:Name="checkBox" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="431,210,0,0" Width="78" Content="Overclock
                               " IsEnabled="False"/>
-                    <Button x:Name="oncompileButton" Content="Lade Datei auf den Cx Cas" HorizontalAlignment="Left" Margin="357,233,0,0" VerticalAlignment="Top" Width="152" Click="button_Click"/>
-                    <Label x:Name="luapathLabel" Content="" Margin="157,233,167,10"/>
-                    <Button x:Name="luaFileButton" Content="Lua-Datei auswählen..." HorizontalAlignment="Left" Margin="10,233,0,0" VerticalAlignment="Top" Width="142" Height="12" Click="luaFileButton_Click"/>
-                    <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="WrapWithOverflow" 
-                    	Text="Folgendes wird ausgeführt (E = Erststart):" VerticalAlignment="Top" Height="23" Width="499" Background="White" FontWeight="Bold"/>
-                    <TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" Margin="10,28,0,0" TextWrapping="WrapWithOverflow" 
-                    	Text="(E)WindowsExplorer-Setup für DragNDrop -> (E)Bereinige CxCas ->
-                               (E)Erstelle lua-Ordner -> (E)Konfiguriere Übertragungspfad im Emulator" VerticalAlignment="Top" Height="37" Width="499" Background="White" FontWeight="Bold"/>
-                    <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="10,76,0,0" TextWrapping="WrapWithOverflow" 
-                    	Text="Klicke Reload-Button -> Kompeliere Lua-Datei -> DragNDrop Tns-Datei -> Starte Datei" VerticalAlignment="Top" Height="58" Width="499" Background="White" FontWeight="Bold"/>
-                    <Button x:Name="StartOffsetAssistent" Content="Starte Positions-Assistenten" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top" Width="499" Height="12" Click="StartOffsetAssistent_Click"/>
-                    <Label x:Name="positionInfoLabel" Content="Positionen: " HorizontalAlignment="Left" Margin="10,139,0,0" VerticalAlignment="Top" Width="173"/>
+                    <Button x:Name="oncompileDragDropButton" Content="Lade Datei auf den Cx Cas" HorizontalAlignment="Left" Margin="357,233,0,0" VerticalAlignment="Top" Width="152" Click="button_Click"/>
+                    <Label x:Name="luapathLabel" Content="" Margin="154,10,10,233"/>
+                    <Button x:Name="luaFileButton" Content="Lua-Datei auswählen..." HorizontalAlignment="Left" Margin="7,10,0,0" VerticalAlignment="Top" Width="142" Height="12" Click="luaFileButton_Click"/>
+                    <Button x:Name="StartOffsetAssistent" Content="Starte Positions-Assistenten" HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top" Width="173" Height="12" Click="StartOffsetAssistent_Click"/>
+                    <Label x:Name="positionInfoLabel" Content="Positionen: " HorizontalAlignment="Left" Margin="10,75,0,0" VerticalAlignment="Top" Width="173"/>
+                    <Button x:Name="onCompileButton" Content="Nur kompilieren" HorizontalAlignment="Left" Margin="7,233,0,0" VerticalAlignment="Top" Width="142" Click="onCompileButton_Click"/>
                 </Grid>
             </TabItem>
 

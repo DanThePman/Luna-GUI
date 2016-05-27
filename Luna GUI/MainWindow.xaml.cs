@@ -158,11 +158,6 @@ namespace Luna_GUI
         {
             WindowManager.MainWindow = this;
 
-            if (Testing.DebugMode)
-            {
-                CallDebugThread();
-            }
-
             if (!Directory.Exists(FileManager._extensionPath))
             {
                 this.ShowMessageAsync("Fehler", "Diese Datei befindet sich nicht im Sublime Text Verzeichnis");
@@ -171,39 +166,6 @@ namespace Luna_GUI
 
             if (!Testing.DebugMode)//fill data grid
                 bgWorker.RunWorkerAsync();
-        }
-
-        private void CallDebugThread()
-        {
-            Thread debugThread = new Thread(() =>
-            {
-                while (true)
-                {
-                    if (Keyboard.IsKeyDown(Key.F10))
-                    {
-                        var codeAnalysis = CompilingAnalysis.RunCodeAnalysis();
-                        if (codeAnalysis.Result == CompilingAnalysis.CodeAnalysisResult.CodeFine)
-                        {
-                            //tnsOutputPath = CompilingAnalysis.CompileLuaFile();
-                            MessageBox.Show("fineee");
-                        }
-                        else
-                        {
-                            string compilingWarning = string.Join("\n", codeAnalysis.Announcements.ToArray());
-                            var messageResult = MessageBox.Show("Es wurden folgende Code-Warnungen endeckt:\n" +
-                                compilingWarning + "\n\nTrotzdem kompilieren?", "Warnung", MessageBoxButton.YesNo);
-
-                            if (messageResult == MessageBoxResult.Yes)
-                            {
-                                //tnsOutputPath = CompilingAnalysis.CompileLuaFile();
-                                MessageBox.Show("fineee");
-                            }
-                        }
-                    }
-                }
-            });
-            debugThread.SetApartmentState(ApartmentState.STA);
-            debugThread.Start();
         }
 
         /// <summary>
@@ -286,7 +248,7 @@ namespace Luna_GUI
         }
 
         /// <summary>
-        /// Update
+        /// Update CodeSnippets-Button
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -320,7 +282,7 @@ namespace Luna_GUI
             luapathLabel.Content = luafileName;
         }
 
-        /*OnCompile*/
+        /*OnCompile + DragDrop*/
         private void button_Click(object sender, RoutedEventArgs e)
         {
             if (!CheckPositionDefinitions())
@@ -331,7 +293,7 @@ namespace Luna_GUI
             }
         }
 
-        /*init compiling*/
+        /*init compiling (tab change)*/
         private void compilingMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (!File.Exists(Environment.CurrentDirectory + "\\LunaUI_positionOffets.config"))
@@ -403,8 +365,40 @@ namespace Luna_GUI
             }.ShowDialog();
         }
 
-        private void mainWindow_Closing(object sender, CancelEventArgs e)
+        /// <summary>
+        /// Compile only
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void onCompileButton_Click(object sender, RoutedEventArgs e)
         {
+            if (Testing.luapath == null)
+            {
+                this.ShowMessageAsync("Fehler", "Wähle erst eine Lua-Datei.");
+                return;
+            }
+
+            var codeAnalysis = CompilingAnalysis.RunCodeAnalysis();
+            if (codeAnalysis.Result == CompilingAnalysis.CodeAnalysisResult.CodeFine)
+            {
+                CompilingAnalysis.CompileLuaFile(codeAnalysis.GetLuaLinesFile());
+                codeAnalysis.RemoveLunaFile();
+            }
+            else
+            {
+                string compilingWarning = string.Join("\n", codeAnalysis.Announcements.ToArray());
+                WindowManager.SetForegroundWindow(this.Title);
+                this.ShowMessageAsync("Warnung", "Es wurden folgende Code-Warnungen endeckt:\n" +
+                    compilingWarning + "\n\nTrotzdem kompilieren?", MessageDialogStyle.AffirmativeAndNegative).
+                    ContinueWith(task => 
+                    {
+                        if (task.Result == MessageDialogResult.Affirmative)
+                        {
+                            CompilingAnalysis.CompileLuaFile(codeAnalysis.GetLuaLinesFile());
+                            codeAnalysis.RemoveLunaFile();
+                        }
+                    });
+            }
         }
     }
 }

@@ -23,12 +23,41 @@ namespace Luna_GUI._Compiling
         {
             public CodeAnalysisResult Result { get; set; }
             public List<string> Announcements = new List<string>();
+            public List<string> LuaLines { get; set; }
+
+            private string CompileFileForLunaPath;
+            public string GetLuaLinesFile()
+            {
+                string path = Path.Combine(Path.GetTempPath(),
+                    "CompileFileForLuna" + new Random().Next(int.MaxValue) + ".lua");
+                CompileFileForLunaPath = path;
+
+                using (StreamWriter sw = new StreamWriter(path))
+                {
+                    foreach (string luaLine in LuaLines)
+                    {
+                        sw.WriteLine(luaLine);
+                    }
+                    sw.Close();
+                }
+
+                return path;
+            }
+
+            public void RemoveLunaFile()
+            {
+                try
+                {
+                    File.Delete(CompileFileForLunaPath);
+                }
+                catch { /**/}
+            }
         }
         /// <summary>
         /// using hopefully extracted luna
         /// </summary>
         /// <returns></returns>
-        public static string CompileLuaFile()
+        public static string CompileLuaFile(string luaFilePath)
         {
             if (!MyResourceManager.loadedResources)
             {
@@ -49,7 +78,7 @@ namespace Luna_GUI._Compiling
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     FileName = Testing.lunaPath,
-                    Arguments = "\"" + Testing.luapath + "\"" + " \"" + tnsOutputPath + "\""
+                    Arguments = "\"" + luaFilePath + "\"" + " \"" + tnsOutputPath + "\""
                 }
             };
             process.Start();
@@ -74,7 +103,25 @@ namespace Luna_GUI._Compiling
 
         static List<string> ReplaceEvents(this List<string> luaLines)
         {
-            return luaLines.Select(luaLine => luaLine.Contains("on.") ? luaLine.Replace(".", "") : luaLine).ToList();
+            return luaLines.Select(luaLine => luaLine.Contains("function on.") ? luaLine.Replace(".", "") : luaLine).ToList();
+        }
+
+        static List<string> RestoreEvents(this List<string> luaLines)
+        {
+            List<string> tempLines = luaLines;
+
+            for (int i = 0; i < tempLines.Count; i++)
+            {
+                var line = tempLines[i];
+                if (line.Contains("function on"))
+                {
+                    int spos = line.IndexOf("function on") + 11;
+                    int epos = line.Length;
+
+                    tempLines[i] = "function on." + line.Substring(spos, epos - spos);
+                }
+            }
+            return tempLines;
         }
 
         static bool IsInOtherMethodScope(this string lineWitDeclVar, List<string> luaLines, string conversionLine)
@@ -139,8 +186,7 @@ namespace Luna_GUI._Compiling
 
                 if (potentialEndLine.Contains("end") && specialLoopsCount == 0)
                 {
-                    int funcEndIndex = luaLines.FindIndex(x => x == potentialEndLine);
-                    return funcEndIndex;
+                    return i;
                 }
                 else if (potentialEndLine.Contains("end"))
                     specialLoopsCount--;
@@ -184,10 +230,20 @@ namespace Luna_GUI._Compiling
 
         static string GetVariableName(this string varibaleDeclarationLine)
         {
-            int epos = varibaleDeclarationLine.IndexOf("=");
-            int spos = varibaleDeclarationLine.Contains("local") ? varibaleDeclarationLine.IndexOf("local") + 5 : 0;
-            string varname = varibaleDeclarationLine.Substring(spos, epos - spos).Replace(" ", "");
-            return varname;
+            if (varibaleDeclarationLine.Contains("="))
+            {
+                int epos = varibaleDeclarationLine.IndexOf("=");
+                int spos = varibaleDeclarationLine.Contains("local") ? varibaleDeclarationLine.IndexOf("local") + 5 : 0;
+                string varname = varibaleDeclarationLine.Substring(spos, epos - spos).Replace(" ", "");
+                return varname;
+            }
+            else //contains local
+            {
+                int epos = varibaleDeclarationLine.Length;
+                int spos = varibaleDeclarationLine.IndexOf("local") + 5;
+                string varname = varibaleDeclarationLine.Substring(spos, epos - spos).Replace(" ", "");
+                return varname;
+            }
         }
 
         static bool IsInMethodScope(this string declLine, List<string> luaLines, int declIndex)
@@ -208,12 +264,14 @@ namespace Luna_GUI._Compiling
                     if (!variableUseLine.Contains(var))
                         return false;
 
-                    char oneIndexLowerThanVarStartIndex = variableUseLine.IndexOf(var) != 0 ?
+                    char oneIndexEarlierThanVarStartIndex = variableUseLine.IndexOf(var) != 0 ?
                         variableUseLine[variableUseLine.IndexOf(var) - 1] : '(';
+                    char oneIndexLaterThanVarStartIndex = variableUseLine.IndexOf(var) + var.Length <= variableUseLine.Length - 1 ?
+                        variableUseLine[variableUseLine.IndexOf(var) + var.Length] : ')';
 
                     /*varname not randomly in unknown string included*/
-                    bool varNameNotInText = Regex.Matches(oneIndexLowerThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0 &&
-                        Regex.Matches(variableUseLine[variableUseLine.IndexOf(var) + var.Length].ToString(), @"[a-zA-Z]").Count == 0; //e.g. function hELLO()...
+                    bool varNameNotInText = Regex.Matches(oneIndexEarlierThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0 &&
+                        Regex.Matches(oneIndexLaterThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0; //e.g. function hELLO()...
 
                     return varNameNotInText;
                 }).ToList();
@@ -271,7 +329,7 @@ namespace Luna_GUI._Compiling
                     return false;
                 };
 
-                if (isVarSet && !alreadyDeclaredGlobally())
+                if ((isVarSet || luaLine.Contains("local")) && !alreadyDeclaredGlobally())
                 {
                     variableNames.Add(luaLine.GetVariableName());
                     variableDeclarationLines.Add(luaLine);
@@ -346,7 +404,47 @@ namespace Luna_GUI._Compiling
 
             if (fieldAttribute == FieldAttributes.Debug)
             {
-                
+                Random rand = new Random();
+                string seed = rand.Next(int.MaxValue).ToString();
+                int funcStartIndex = SearchFunctionStart(luaLines, fieldIndex);
+                string fieldstr = luaLines[fieldIndex];
+
+                List<string> OnFieldCallFunc = new List<string>
+                {
+                    $"function OnFieldCall{seed}()",
+                    fieldstr,
+                    "end"
+                };
+                OnFieldCallFunc.Reverse();
+                List<string> OnFieldCallFuncFail = new List<string>
+                {
+                    $"local __errorHandleVar{seed} = \"\"",
+                    $"function OnFieldCall{seed}_Fail(err)",
+                    $"__errorHandleVar{seed} = tostring(err)",
+                    "end"
+                };
+                OnFieldCallFuncFail.Reverse();
+
+                foreach (var VARIABLE in OnFieldCallFunc)
+                {
+                    luaTemplateLines.Insert(funcStartIndex, VARIABLE);
+                }
+                foreach (var VARIABLE in OnFieldCallFuncFail)
+                {
+                    luaTemplateLines.Insert(funcStartIndex, VARIABLE);
+                }
+                funcStartIndex += OnFieldCallFunc.Count + OnFieldCallFuncFail.Count;
+                fieldIndex += OnFieldCallFunc.Count + OnFieldCallFuncFail.Count;
+
+                /*clear debug attribute + field*/
+                luaTemplateLines.RemoveAt(fieldIndex - 1);
+                luaTemplateLines.RemoveAt(fieldIndex - 1);
+                luaTemplateLines.Insert(fieldIndex - 1, $"xpcall( OnFieldCall{seed}, OnFieldCall{seed}_Fail )");
+
+                int errorHandleCount = luaTemplateLines.Count(x => x.Contains("local __errorHandleVar"));
+                luaTemplateLines.Insert(luaTemplateLines.FindIndex(
+                    x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugError] \"..__errorHandleVar{seed}," +
+                                                                 $" 150, {5 * errorHandleCount}, \"top\")");
             }
 
             return luaTemplateLines;
@@ -403,8 +501,9 @@ namespace Luna_GUI._Compiling
                 /*create errorHandleFunc*/
                 List<string> errorHandleFunc = new List<string>
                 {
-                    "function onErrorHandle" + randFunctionSeed + "(err)",
-                    "print( \"[Debug Error]:\", err )",
+                    $"local __errorHandleVar{randFunctionSeed} = \"\"",
+                    $"function onFunction{randFunctionSeed}_Fail(err)",
+                    $"__errorHandleVar{randFunctionSeed} = tostring(err)",
                     "end"
                 };
                 errorHandleFunc.Reverse();
@@ -415,10 +514,15 @@ namespace Luna_GUI._Compiling
                 }
                 functionLineIndex += errorHandleFunc.Count;
 
-                luaLinesTemplate.Insert(functionLineIndex + 1, $"xpcall( {detourFunctionName}, onErrorHandle{randFunctionSeed} )");
+                luaLinesTemplate.Insert(functionLineIndex + 1, $"xpcall( {detourFunctionName}, onFunction{randFunctionSeed}_Fail )");
 
                 /*remove debug attribute*/
                 luaLinesTemplate.RemoveAt(functionLineIndex - 1);
+
+                int errorHandleCount = luaLinesTemplate.Count(x => x.Contains("local __errorHandleVar"));
+                luaLinesTemplate.Insert(luaLinesTemplate.FindIndex(
+                    x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugError] \"..__errorHandleVar{randFunctionSeed}, " +
+                                                                 $"150, {5 * errorHandleCount}, \"top\")");
             }
 
             return luaLinesTemplate;
@@ -428,15 +532,26 @@ namespace Luna_GUI._Compiling
         {
             var lines = GetLuaLines();
             lines = lines.ReplaceEvents().Select(x => x.Replace("\t", "")).ToList();
-            List<string> funcAttributeErros = ConvertFunctionAttributes(ref lines);
-            List<string> fieldAttributeErros = ConvertFieldAttributes(ref lines);
-
             List<string> declIssues = CheckDeclarationIssues(lines);
-            List<string> conversionIssues = CheckConversionIssues(lines);
-            declIssues.AddRange(conversionIssues);
-            declIssues.AddRange(funcAttributeErros);
-            declIssues.AddRange(fieldAttributeErros);
 
+            try
+            {
+                List<string> funcAttributeErros = ConvertFunctionAttributes(ref lines);
+                List<string> fieldAttributeErros = ConvertFieldAttributes(ref lines);
+
+                
+                List<string> conversionIssues = CheckConversionIssues(lines);
+                declIssues.AddRange(conversionIssues);
+                declIssues.AddRange(funcAttributeErros);
+                declIssues.AddRange(fieldAttributeErros);
+            }
+            catch
+            {
+                //codeAnalysis fail
+                WindowManager.MainWindow.ShowMessageAsync("Information", "CodeAnalyse fehlgeschlagen");
+            }
+
+            #region through the compiler
             if (MyResourceManager.LuaCompilerInstalled)
             {
                 string debugPath = Path.GetTempPath() + Testing.luafilenameNoExtension + "_Debug.lua";
@@ -453,22 +568,28 @@ namespace Luna_GUI._Compiling
                 string errorMessage = "";
                 try
                 {
-                    DynValue res = Script.RunFile(debugPath);
+                    Script.RunFile(debugPath);
                 }
                 catch (Exception _errorMessage)
                 {
                     errorMessage = "[LUA] " + _errorMessage.Message;
                 }
 
-                declIssues.Add(errorMessage != "" ? "\n" + errorMessage : "\n[LUA] Code fine");
+                declIssues.Add("\n" + errorMessage);
                 try { File.Delete(debugPath); } catch {/* ignored*/}
             }
+            #endregion
+
+            if (Testing.DebugMode)
+                File.WriteAllLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\luaLines.txt", 
+                lines);
 
             return new CodeAnalysisInfo
             {
-                Result = declIssues.Count <= 1 /*Code fine string*/ ?
+                Result = declIssues.All(x => x == "" || x == "\n") /*Code fine string*/ ?
                     CodeAnalysisResult.CodeFine : CodeAnalysisResult.Warnings,
-                Announcements = declIssues
+                Announcements = declIssues,
+                LuaLines = lines.RestoreEvents()
             };
         }
 
