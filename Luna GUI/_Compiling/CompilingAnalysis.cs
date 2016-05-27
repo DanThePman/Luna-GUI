@@ -548,7 +548,13 @@ namespace Luna_GUI._Compiling
             catch
             {
                 //codeAnalysis fail
-                WindowManager.MainWindow.ShowMessageAsync("Information", "CodeAnalyse fehlgeschlagen");
+                WindowManager.MainWindow.ShowMessageAsync("Information", "CodeAnalyse fehlgeschlagen..Kompilierung wird fortgesetzt.");
+                return new CodeAnalysisInfo
+                {
+                    Result = CodeAnalysisResult.CodeFine,
+                    Announcements = new List<string>(),
+                    LuaLines = GetLuaLines()
+                };
             }
 
             #region through the compiler

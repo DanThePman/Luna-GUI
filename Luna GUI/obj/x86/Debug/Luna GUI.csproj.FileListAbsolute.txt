@@ -28,3 +28,4 @@ C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\MoonSharp.Interpreter.dll
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\MoonSharp.Interpreter.pdb
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\MoonSharp.Interpreter.xml
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Debug\Luna GUI.csprojResolveAssemblyReference.cache
