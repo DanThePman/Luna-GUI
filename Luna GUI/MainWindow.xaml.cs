@@ -109,7 +109,7 @@ namespace Luna_GUI
             new ObservableCollection<LocalDataGidSnippet>();
 
         private readonly BackgroundWorker bgWorker = new BackgroundWorker();
-        private List<FileManager.CodeSnippetComparison> listCodeSnippetComparisons;
+        internal List<FileManager.CodeSnippetComparison> listCodeSnippetComparisons;
 
         public MainWindow()
         {
@@ -149,6 +149,7 @@ namespace Luna_GUI
                 catch
                 {
                     //Windows XP crash here
+                    this.ShowMessageAsync("Fehler", "XP-Fehler beim Laden der OnlineSnippets..");
                 }
             };
         }
@@ -352,12 +353,6 @@ namespace Luna_GUI
                 MyResourceManager.GetNameOf(() => Properties.Resources.luna), ".exe");
             MyResourceManager.ExractExecutableResource(Properties.Resources.src,
                 MyResourceManager.GetNameOf(() => Properties.Resources.src), ".zip");
-            MyResourceManager.ExractExecutableResource(Properties.Resources.lua52,
-                MyResourceManager.GetNameOf(() => Properties.Resources.lua52), ".dll");
-            MyResourceManager.ExractExecutableResource(Properties.Resources.KeraLua,
-                MyResourceManager.GetNameOf(() => Properties.Resources.KeraLua), ".dll");
-            MyResourceManager.ExractExecutableResource(Properties.Resources.NLua,
-                MyResourceManager.GetNameOf(() => Properties.Resources.NLua), ".dll");
         }
 
         private bool CheckPositionDefinitions()

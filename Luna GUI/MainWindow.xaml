@@ -61,7 +61,7 @@
                     	Text="(E)WindowsExplorer-Setup für DragNDrop -> (E)Bereinige CxCas ->
                                (E)Erstelle lua-Ordner -> (E)Konfiguriere Übertragungspfad im Emulator" VerticalAlignment="Top" Height="37" Width="499" Background="White" FontWeight="Bold"/>
                     <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="10,76,0,0" TextWrapping="WrapWithOverflow" 
-                    	Text="Klicke Reload-Button -> Kompeliere Lua-Datei -> DragNDrop Tns-Datei -> Starte Datei" VerticalAlignment="Top" Height="21" Width="499" Background="White" FontWeight="Bold"/>
+                    	Text="Klicke Reload-Button -> Kompeliere Lua-Datei -> DragNDrop Tns-Datei -> Starte Datei" VerticalAlignment="Top" Height="58" Width="499" Background="White" FontWeight="Bold"/>
                     <Button x:Name="StartOffsetAssistent" Content="Starte Positions-Assistenten" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top" Width="499" Height="12" Click="StartOffsetAssistent_Click"/>
                     <Label x:Name="positionInfoLabel" Content="Positionen: " HorizontalAlignment="Left" Margin="10,139,0,0" VerticalAlignment="Top" Width="173"/>
                 </Grid>

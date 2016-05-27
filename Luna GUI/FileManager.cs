@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Luna_GUI
 {
@@ -50,27 +51,12 @@ namespace Luna_GUI
 
         static List<string> GetOnlineCodeSnippets()
         {
-            string data = null;
-
             string urlAddress = projectPath;
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                Stream receiveStream = response.GetResponseStream();
-                StreamReader readStream = null;
-
-                readStream =
-                    response.CharacterSet == null ? new StreamReader(receiveStream) :
-                        new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
-
-                data = readStream.ReadToEnd();
-
-                response.Close();
-                readStream.Close();
-            }
+            WebClient client = new WebClient();
+            client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+            var data = client.DownloadString(urlAddress);
+            client.Dispose();
 
             List<string> fileNames = new List<string>();
             using (StringReader reader = new StringReader(data))
@@ -91,6 +77,7 @@ namespace Luna_GUI
                     else
                         break;
                 }
+                reader.Close();
             }
 
             return fileNames;
@@ -99,27 +86,12 @@ namespace Luna_GUI
 
         public static string GetOnlineSnippetContent(string snippetName)
         {
-            string content = null;
-
             string urlAddress = "https://raw.githubusercontent.com/DanThePman/LunaCodeSnippets/master/" + snippetName;
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                Stream receiveStream = response.GetResponseStream();
-                StreamReader readStream = null;
-
-                readStream =
-                    response.CharacterSet == null ? new StreamReader(receiveStream) :
-                        new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
-
-                content = readStream.ReadToEnd();
-
-                response.Close();
-                readStream.Close();
-            }
+            WebClient client = new WebClient();
+            client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+            var content = client.DownloadString(urlAddress);
+            client.Dispose();
 
             return content;
         }
