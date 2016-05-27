@@ -443,7 +443,7 @@ namespace Luna_GUI._Compiling
 
                 int errorHandleCount = luaTemplateLines.Count(x => x.Contains("local __errorHandleVar"));
                 luaTemplateLines.Insert(luaTemplateLines.FindIndex(
-                    x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugError] \"..__errorHandleVar{seed}," +
+                    x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{seed}," +
                                                                  $" 150, {5 * errorHandleCount}, \"top\")");
             }
 
@@ -521,7 +521,7 @@ namespace Luna_GUI._Compiling
 
                 int errorHandleCount = luaLinesTemplate.Count(x => x.Contains("local __errorHandleVar"));
                 luaLinesTemplate.Insert(luaLinesTemplate.FindIndex(
-                    x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugError] \"..__errorHandleVar{randFunctionSeed}, " +
+                    x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{randFunctionSeed}, " +
                                                                  $"150, {5 * errorHandleCount}, \"top\")");
             }
 
