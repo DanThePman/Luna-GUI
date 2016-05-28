@@ -3,7 +3,7 @@
 Das Luna GUI sorgt für die Aktualisierung von Code-Snippets innerhalb der Sublime-Text-Entwicklungsumgebung, um effizienter Code 
 fuer den Taschenrechner zu erstellen und besitzt einen integrierten Compiler, der das Erstellen und übertragen von tns-Dateien 
 ermöglicht.
-Da das Drag&Drop-Verfahren simuliert wird müssen Positionen für Buttons und Felder festgelegt werden.
+Da das Drag&Drop-Verfahren simuliert wird, müssen Positionen für Buttons und Felder festgelegt werden.
 Ein OffsetFinder-Wizard im Tab "Testing" hilft beim Ermitteln der relativen Fenster- und Buttonpositionen, die gesetzt werden müssen,
 um Dateien automatisch auf den Emulator übertragen zu können.
 
@@ -22,7 +22,8 @@ Aktuelle Funktionen:
 
 Zufünftige:
 - Multithreading-Attribut
-- Korrekte Verwendung des Grafikkontextes "gc"
+- UpdateFunction-Attribut (on.paint Klon)
+- Live-Debugging (eventuell)
 
 
 ##Attribute
