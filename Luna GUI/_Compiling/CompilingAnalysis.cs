@@ -434,6 +434,7 @@ namespace Luna_GUI._Compiling
         {
             ScreenUpdate,
             Debug,
+            LiveDebug,
             Thread
         }
 
@@ -551,12 +552,15 @@ namespace Luna_GUI._Compiling
 
             if (funcAttribute == FunctionAttributes.ScreenUpdate)
             {
+                #region ScreenUpdate
                 int EndFuncIndex = SearchFunctionEnd(luaLinesTemplate, functionLineIndex);
                 luaLinesTemplate.Insert(EndFuncIndex, "platform.window:invalidate()");
                 luaLinesTemplate.RemoveAt(functionLineIndex - 1);
+                #endregion
             }
             else if (funcAttribute == FunctionAttributes.Debug)
             {
+                #region Debug
                 int s = luaLinesTemplate[functionLineIndex].IndexOf("(") + 1;
                 int e = luaLinesTemplate[functionLineIndex].IndexOf(")");
                 string rawFuncArgs = luaLinesTemplate[functionLineIndex].Substring(s, e - s).Replace(" ", "");
@@ -617,12 +621,18 @@ namespace Luna_GUI._Compiling
                 luaLinesTemplate.Insert(luaLinesTemplate.FindIndex(
                     x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{randFunctionSeed}, " +
                                                                  $"150, {5 * errorHandleCount}, \"top\")");
+                #endregion
             }
             else if (funcAttribute == FunctionAttributes.Thread)
             {
+                #region Thread
                 int s = luaLinesTemplate[functionLineIndex].IndexOf("function ") + 9;
                 int e = luaLinesTemplate[functionLineIndex].IndexOf("(");
                 string funcName = luaLinesTemplate[functionLineIndex].Substring(s, e - s);
+
+                int s3 = luaLinesTemplate[functionLineIndex].IndexOf("(") + 1;
+                int e3 = luaLinesTemplate[functionLineIndex].IndexOf(")");
+                string funcArgs = luaLinesTemplate[functionLineIndex].Substring(s3, e3 - s3).Replace(" ", "");
 
                 string funcAsTempFuncName = luaLinesTemplate[functionLineIndex].Replace(funcName, "");
                 string randFuncName = funcName + new Random().Next(int.MaxValue);
@@ -652,7 +662,7 @@ namespace Luna_GUI._Compiling
                 /*createThreadCloneFunc*/
                 luaLinesTemplate.Insert(functionLineIndex, "end");
                 luaLinesTemplate.Insert(functionLineIndex, isReturnFunction ? 
-                    $"return {randFuncName}()" : $"{randFuncName}()");
+                    $"return {randFuncName}({funcArgs})" : $"{randFuncName}({funcArgs})");
 
                 luaLinesTemplate.Insert(functionLineIndex, "end)");
                 foreach (string functionCodeLine in functionCodeLines)
@@ -660,14 +670,19 @@ namespace Luna_GUI._Compiling
                     luaLinesTemplate.Insert(functionLineIndex, functionCodeLine);
                 }
                 luaLinesTemplate.Insert(functionLineIndex, ThreadFuncVar);
-                luaLinesTemplate.Insert(functionLineIndex, $"function ThreadCloneFunc_{funcName}()");
+                luaLinesTemplate.Insert(functionLineIndex, $"function ThreadCloneFunc_{funcName}({funcArgs})");
 
                 /*call clone func from original func*/
                 luaLinesTemplate.Insert(functionLineIndex + 6 + functionCodeLines.Count, 
-                    isReturnFunction ? $"return ThreadCloneFunc_{funcName}()" : $"ThreadCloneFunc_{funcName}()");
+                    isReturnFunction ? $"return ThreadCloneFunc_{funcName}({funcArgs})" : $"ThreadCloneFunc_{funcName}({funcArgs})");
 
                 /*remove attribute*/
                 luaLinesTemplate.RemoveAt(functionLineIndex - 1);
+                #endregion
+            }
+            else if (funcAttribute == FunctionAttributes.LiveDebug)
+            {
+                
             }
 
             return luaLinesTemplate;
@@ -757,7 +772,8 @@ namespace Luna_GUI._Compiling
         private static List<string> ConvertFunctionAttributes(ref List<string> lines)
         {
             List<string> attributeErros = new List<string>();
-            foreach (object funcAttribute in Enum.GetValues(typeof(FunctionAttributes)))
+            foreach (FunctionAttributes funcAttribute in Enum.GetValues(typeof(FunctionAttributes)).
+                Cast<FunctionAttributes>().OrderBy(x => x == FunctionAttributes.LiveDebug))
             {
                 bool err = false;
                 var output = lines.CheckFunctionAttribute((FunctionAttributes)funcAttribute, out err);
