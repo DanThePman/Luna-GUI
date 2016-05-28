@@ -330,8 +330,12 @@ namespace Luna_GUI._Compiling
                         int indexOfEqual2 = luaLine2.IndexOf("=");
                         bool isVarSet2 = luaLine2.Contains("=") && luaLine2.Count(x => x == '=') == 1 &&
                                         luaLine2.Any(charr => luaLine2.IndexOf(charr) < indexOfEqual2);
+                        if (!isVarSet2 && luaLine2.Contains("local ") && !luaLine2.Contains("function"))
+                        {
+                            isVarSet2 = true;
+                        }
 
-                        if (isVarSet2 && luaLine2 == luaLine) /*other delcaration found*/
+                        if (isVarSet2 && luaLine2.GetVariableName() == luaLine.GetVariableName()) /*other delcaration found*/
                         {
                             if (!luaLine2.IsInMethodScope(luaLines, j))
                                 return true;
