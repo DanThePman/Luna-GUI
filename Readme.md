@@ -81,6 +81,7 @@ return ThreadCloneFunc_funcccccccccccc()
 end
 ```
 ###LiveDebug [Alpha]
+![Image](https://raw.githubusercontent.com/DanThePman/Luna-GUI/master/liveDebugExplanation.png)
 ```lua
 function on.paint(gc --[[Grafikgerät]])
 
