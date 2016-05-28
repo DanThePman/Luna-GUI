@@ -26,3 +26,4 @@ C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Release\Luna GUI.csproj.GenerateResource.Cache
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Release\Luna GUI.exe
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Release\Luna GUI.pdb
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\obj\x86\Release\Luna GUI.csprojResolveAssemblyReference.cache

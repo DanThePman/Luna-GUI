@@ -151,7 +151,7 @@ namespace Luna_GUI._Compiling
             {
                 "if",
                 "for",
-                "while"
+                "while",
             };
 
             int ends = 0;
@@ -165,8 +165,8 @@ namespace Luna_GUI._Compiling
                 ends -= specialLoops.Count(specialLoop => potentialFunctionLine.Contains(specialLoop) &&
                                                           specialLoop.stringNotInText(potentialFunctionLine));
                
-
-                if (potentialFunctionLine.Contains("function ") && !potentialFunctionLine.Contains("=") && ends == 0)
+                if (potentialFunctionLine.Contains("function") 
+                    /*&& !potentialFunctionLine.Contains("=") TEMP FUNC OK TOO*/ && ends == 0)
                     return i;
             }
 
@@ -182,8 +182,11 @@ namespace Luna_GUI._Compiling
             {
                 "if",
                 "for",
-                "while"
+                "while",
+                "function ()",
+                "function()"
             };
+
             int specialLoopsCount = 0;
             for (int i = functionStartIndex + 1; i < luaLines.Count; i++)
             {
@@ -276,10 +279,14 @@ namespace Luna_GUI._Compiling
         {
             List<string> issues = new List<string>();
             List<string> variableNames, variableDeclarationLines;
-            GetVariableDeclarationLines(luaLines, out variableNames, out variableDeclarationLines);
+            List<int> varDeclIndexes;
+            GetVariableDeclarationLines(luaLines, out variableNames, out variableDeclarationLines, out varDeclIndexes);
 
-            foreach (string variableUseLine in luaLines)
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (int currentLineIndex = 0; currentLineIndex < luaLines.Count; currentLineIndex++)
             {
+                string variableUseLine = luaLines[currentLineIndex];
                 List<string> varNameOccurrencesInLuaLine = variableNames.Where(var =>
                 {
                     if (!variableUseLine.Contains(var))
@@ -288,20 +295,34 @@ namespace Luna_GUI._Compiling
                     return var.stringNotInText(variableUseLine);
                 }).ToList();
 
+                // ReSharper disable once LoopCanBeConvertedToQuery
                 foreach (string varNameOccurrenceInLine in varNameOccurrencesInLuaLine)
                 {
                     bool declLineItself = variableDeclarationLines.Any(x =>
-                            x.GetVariableName() == varNameOccurrenceInLine && x == variableUseLine);
+                        x.GetVariableName() == varNameOccurrenceInLine && x == variableUseLine);
 
                     if (declLineItself)
                         continue;
 
                     string declLine = variableDeclarationLines.First(x => x.GetVariableName() == varNameOccurrenceInLine);
+                    int declIndex = varDeclIndexes.First(x => luaLines[x] == declLine);
+
                     if (declLine.IsInOtherMethodScope(luaLines, variableUseLine))
                     {
                         string varName = variableNames.First(variableUseLine.Contains);
-                        issues.Add("'" + varName + "' => [CompilingAnalysis] The variable's declaration is not reachable at '" +
-                            variableUseLine + "'");
+                        issues.Add("'" + varName +
+                                   "' => [CompilingAnalysis] The variable's declaration is not reachable at '" +
+                                   variableUseLine + "'");
+                    }
+                    else //var theoretically accessable but maybe declared too late
+                    {
+                        if (currentLineIndex < declIndex)
+                        {
+                            string varName = variableNames.First(variableUseLine.Contains);
+                            issues.Add("'" + varName +
+                                   "' => [CompilingAnalysis] The variable's declaration is too late in code at'" +
+                                   declLine + "'");
+                        }
                     }
                 }
             }
@@ -309,7 +330,8 @@ namespace Luna_GUI._Compiling
             return issues;
         }
 
-        private static void GetVariableDeclarationLines(List<string> luaLines, out List<string> variableNames, out List<string> variableDeclarationLines)
+        private static void GetVariableDeclarationLines(List<string> luaLines, 
+            out List<string> variableNames, out List<string> variableDeclarationLines)
         {
             variableNames = new List<string>();
             variableDeclarationLines = new List<string>();
@@ -319,6 +341,10 @@ namespace Luna_GUI._Compiling
                 int indexOfEqual = luaLine.IndexOf("=");
                 bool isVarSet = luaLine.Contains("=") && luaLine.Count(x => x == '=') == 1 &&
                                 luaLine.Any(charr => luaLine.IndexOf(charr) < indexOfEqual);
+                if (!isVarSet && luaLine.Contains("local ") && !luaLine.Contains("local function"))
+                {
+                    isVarSet = true;
+                }
 
                 Func<bool> alreadyDeclaredGlobally = () =>
                 {
@@ -330,7 +356,7 @@ namespace Luna_GUI._Compiling
                         int indexOfEqual2 = luaLine2.IndexOf("=");
                         bool isVarSet2 = luaLine2.Contains("=") && luaLine2.Count(x => x == '=') == 1 &&
                                         luaLine2.Any(charr => luaLine2.IndexOf(charr) < indexOfEqual2);
-                        if (!isVarSet2 && luaLine2.Contains("local ") && !luaLine2.Contains("function"))
+                        if (!isVarSet2 && luaLine2.Contains("local ") && !luaLine2.Contains("local function"))
                         {
                             isVarSet2 = true;
                         }
@@ -345,10 +371,59 @@ namespace Luna_GUI._Compiling
                     return false;
                 };
 
-                if ((isVarSet || 
-                    (luaLine.Contains("local") && !luaLine.Contains("function")) )
-                    && !alreadyDeclaredGlobally())
+                if (isVarSet&& !alreadyDeclaredGlobally())
                 {
+                    variableNames.Add(luaLine.GetVariableName());
+                    variableDeclarationLines.Add(luaLine);
+                }
+            }
+        }
+        private static void GetVariableDeclarationLines(List<string> luaLines,
+            out List<string> variableNames, out List<string> variableDeclarationLines, out List<int> varDeclIndexes)
+        {
+            variableNames = new List<string>();
+            variableDeclarationLines = new List<string>();
+            varDeclIndexes = new List<int>();
+            for (int i = 0; i < luaLines.Count; i++)
+            {
+                string luaLine = luaLines[i];
+                int indexOfEqual = luaLine.IndexOf("=");
+                bool isVarSet = luaLine.Contains("=") && luaLine.Count(x => x == '=') == 1 &&
+                                luaLine.Any(charr => luaLine.IndexOf(charr) < indexOfEqual);
+                if (!isVarSet && luaLine.Contains("local ") && !luaLine.Contains("local function"))
+                {
+                    isVarSet = true;
+                }
+
+                Func<bool> alreadyDeclaredGlobally = () =>
+                {
+                    for (int j = 0; j < luaLines.Count; j++)
+                    {
+                        if (i == j) continue;
+
+                        string luaLine2 = luaLines[j];
+                        int indexOfEqual2 = luaLine2.IndexOf("=");
+                        bool isVarSet2 = luaLine2.Contains("=") && luaLine2.Count(x => x == '=') == 1 &&
+                                        luaLine2.Any(charr => luaLine2.IndexOf(charr) < indexOfEqual2);
+                        if (!isVarSet2 && luaLine2.Contains("local ") && !luaLine2.Contains("local function"))
+                        {
+                            isVarSet2 = true;
+                        }
+
+                        if (isVarSet2 && luaLine2.GetVariableName() == luaLine.GetVariableName()) /*other delcaration found*/
+                        {
+                            if (!luaLine2.IsInMethodScope(luaLines, j))
+                                return true;
+                        }
+                    }
+                    
+
+                    return false;
+                };
+
+                if (isVarSet && !alreadyDeclaredGlobally())
+                {
+                    varDeclIndexes.Add(i);
                     variableNames.Add(luaLine.GetVariableName());
                     variableDeclarationLines.Add(luaLine);
                 }
