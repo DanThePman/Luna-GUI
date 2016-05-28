@@ -2,10 +2,8 @@ C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\Luna GUI.exe
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\Luna GUI.pdb
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\MahApps.Metro.dll
-C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\NLua.dll
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\System.Windows.Interactivity.dll
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\WindowsInput.dll
-C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\KeraLua.dll
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\MahApps.Metro.pdb
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\MahApps.Metro.xml
 C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Luna GUI\Luna GUI\bin\x86\Debug\WindowsInput.xml

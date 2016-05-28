@@ -341,6 +341,7 @@ namespace Luna_GUI._Compiling
         {
             ScreenUpdate,
             Debug,
+            Thread
         }
 
         enum FieldAttributes
@@ -523,6 +524,22 @@ namespace Luna_GUI._Compiling
                 luaLinesTemplate.Insert(luaLinesTemplate.FindIndex(
                     x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{randFunctionSeed}, " +
                                                                  $"150, {5 * errorHandleCount}, \"top\")");
+            }
+            else if (funcAttribute == FunctionAttributes.Thread)
+            {
+                int s = luaLinesTemplate[functionLineIndex].IndexOf("function ") + 9;
+                int e = luaLinesTemplate[functionLineIndex].IndexOf("(");
+                string funcName = luaLinesTemplate[functionLineIndex].Substring(s, e - s);
+                string funcAsTempFuncName = luaLinesTemplate[functionLineIndex].Replace(funcName, "");
+                string ThreadVar = $"local {funcName} = coroutine.wrap({funcAsTempFuncName}";
+
+                luaLinesTemplate[functionLineIndex] = ThreadVar;
+
+                int endFuncIndex = SearchFunctionEnd(luaLines, functionLineIndex);
+                luaLinesTemplate[endFuncIndex] = "end)";
+
+                /*remove attribute*/
+                luaLinesTemplate.RemoveAt(functionLineIndex - 1);
             }
 
             return luaLinesTemplate;

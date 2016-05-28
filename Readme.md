@@ -17,12 +17,10 @@ Aktuelle Funktionen:
 - MoonSharp Lua-Compiler
 - Eventkonvertierung
 - Deklarationsüberprüfung
-- Funktionsattribute: (Ursprung: Microsoft.Reflection) ScreenUpdate, Debug
-- Feldattribute: (Ursprung: Microsoft.Reflection) Debug
+- Funktions-Attribute: ScreenUpdate, Debug, Thread
+- Feld-Attribute: Debug
 
 Zufünftige:
-- Multithreading-Attribut
-- UpdateFunction-Attribut (on.paint Klon)
 - Live-Debugging (eventuell)
 
 
