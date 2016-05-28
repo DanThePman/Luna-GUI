@@ -147,19 +147,26 @@ namespace Luna_GUI._Compiling
 
         private static int SearchFunctionStart(List<string> luaLines, int lineIndex)
         {
+            List<string> specialLoops = new List<string>
+            {
+                "if",
+                "for",
+                "while"
+            };
+
             int ends = 0;
             for (int i = lineIndex - 1; i >= 0; i--)
             {
                 string potentialFunctionLine = luaLines[i];
 
-                if (potentialFunctionLine.Contains("end"))
+                if (potentialFunctionLine.Contains("end") && "end".stringNotInText(potentialFunctionLine))
                     ends++;
 
-                if (potentialFunctionLine.Contains("if") || potentialFunctionLine.Contains("while") ||
-                    potentialFunctionLine.Contains("for"))
-                    ends--;
+                ends -= specialLoops.Count(specialLoop => potentialFunctionLine.Contains(specialLoop) &&
+                                                          specialLoop.stringNotInText(potentialFunctionLine));
+               
 
-                if (potentialFunctionLine.Contains("function") && !potentialFunctionLine.Contains("=") && ends == 0)
+                if (potentialFunctionLine.Contains("function ") && !potentialFunctionLine.Contains("=") && ends == 0)
                     return i;
             }
 
@@ -188,7 +195,7 @@ namespace Luna_GUI._Compiling
                 {
                     return i;
                 }
-                else if (potentialEndLine.Contains("end"))
+                else if (potentialEndLine.Contains("end") && "end".stringNotInText(potentialEndLine))
                     specialLoopsCount--;
             }
 
@@ -545,17 +552,29 @@ namespace Luna_GUI._Compiling
                 /*remove func code and safe in list*/
                 int removeIndex = functionLineIndex + 1;
                 int funcEndIndex = SearchFunctionEnd(luaLines, functionLineIndex);
+                bool isReturnFunction = false;
                 List<string> functionCodeLines = new List<string>();
                 for (int i = functionLineIndex + 1; i < funcEndIndex; i++)
                 {
-                    functionCodeLines.Add(luaLinesTemplate[removeIndex]);
+                    if (luaLinesTemplate[removeIndex].Contains("return "))
+                    {
+                        isReturnFunction = true;
+                        int s2 = luaLinesTemplate[removeIndex].IndexOf("return") + 6;
+                        string returnVal = luaLinesTemplate[removeIndex].Substring(s2,
+                            luaLinesTemplate[removeIndex].Length - s2).Replace(" ", "");
+                        functionCodeLines.Add($"coroutine.yield({returnVal})");
+                    }
+                    else
+                        functionCodeLines.Add(luaLinesTemplate[removeIndex]);
                     luaLinesTemplate.RemoveAt(removeIndex);
                 }
                 functionCodeLines.Reverse();
 
                 /*createThreadCloneFunc*/
                 luaLinesTemplate.Insert(functionLineIndex, "end");
-                luaLinesTemplate.Insert(functionLineIndex, $"{randFuncName}()");
+                luaLinesTemplate.Insert(functionLineIndex, isReturnFunction ? 
+                    $"return {randFuncName}()" : $"{randFuncName}()");
+
                 luaLinesTemplate.Insert(functionLineIndex, "end)");
                 foreach (string functionCodeLine in functionCodeLines)
                 {
@@ -565,7 +584,8 @@ namespace Luna_GUI._Compiling
                 luaLinesTemplate.Insert(functionLineIndex, $"function ThreadCloneFunc_{funcName}()");
 
                 /*call clone func from original func*/
-                luaLinesTemplate.Insert(functionLineIndex + 6 + functionCodeLines.Count, $"ThreadCloneFunc_{funcName}()");
+                luaLinesTemplate.Insert(functionLineIndex + 6 + functionCodeLines.Count, 
+                    isReturnFunction ? $"return ThreadCloneFunc_{funcName}()" : $"ThreadCloneFunc_{funcName}()");
 
                 /*remove attribute*/
                 luaLinesTemplate.RemoveAt(functionLineIndex - 1);
