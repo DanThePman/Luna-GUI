@@ -62,22 +62,23 @@ function funcccccccccccc()
 a = a+1
 if a > 50 then a = 0 end
 platform.window:invalidate()
+return a
 end
 ```
 im Hintergrund generiert zu
 ```lua
 function ThreadCloneFunc_funcccccccccccc()
-local funcccccccccccc356293160 = coroutine.wrap(function ()
+local funcccccccccccc1458243235 = coroutine.wrap(function ()
 a = a+1
 if a > 50 then a = 0 end
 platform.window:invalidate()
+coroutine.yield(a)
 end)
-funcccccccccccc356293160()
+return funcccccccccccc1458243235()
 end
 function funcccccccccccc()
-ThreadCloneFunc_funcccccccccccc()
+return ThreadCloneFunc_funcccccccccccc()
 end
-
 ```
 
 ##Screenshots
