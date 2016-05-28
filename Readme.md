@@ -1,26 +1,26 @@
 <img src="icon.png" align="right" />
 # Luna GUI
-Das Luna GUI sorgt für die Aktualisierung von Code-Snippets innerhalb der Sublime-Text-Entwicklungsumgebung, um effizienter Code 
-fuer den Taschenrechner zu erstellen und besitzt einen integrierten Compiler, der das Erstellen und übertragen von tns-Dateien 
-ermöglicht.
-Da das Drag&Drop-Verfahren simuliert wird müssen Positionen für Buttons und Felder festgelegt werden.
-Ein OffsetFinder-Wizard im Tab "Testing" hilft beim Ermitteln der relativen Fenster- und Buttonpositionen, die gesetzt werden müssen,
-um Dateien automatisch auf den Emulator übertragen zu können.
+Das Luna GUI sorgt fÃ¼r die Aktualisierung von Code-Snippets innerhalb der Sublime-Text-Entwicklungsumgebung, um effizienter Code 
+fuer den Taschenrechner zu erstellen und besitzt einen integrierten Compiler, der das Erstellen und Ã¼bertragen von tns-Dateien 
+ermÃ¶glicht.
+Da das Drag&Drop-Verfahren simuliert wird mÃ¼ssen Positionen fÃ¼r Buttons und Felder festgelegt werden.
+Ein OffsetFinder-Wizard im Tab "Testing" hilft beim Ermitteln der relativen Fenster- und Buttonpositionen, die gesetzt werden mÃ¼ssen,
+um Dateien automatisch auf den Emulator Ã¼bertragen zu kÃ¶nnen.
 
 Hinweise:
 - Reload-Button => Gelber Button, der im Dateiuebertragungsfenster steht
-- Zielordner-Textfeld => unter Einstellungen->Dateiübertragung das Textfeld neben "Ziel-Ordner"
+- Zielordner-Textfeld => unter Einstellungen->DateiÃ¼bertragung das Textfeld neben "Ziel-Ordner"
 - Taskleistensymbol => von Firebird
 
 ## CodeAnalyse
 Aktuelle Funktionen:
 - MoonSharp Lua-Compiler
 - Eventkonvertierung
-- Deklarationsüberprüfung
+- DeklarationsÃ¼berprÃ¼fung
 - Funktionsattribute: (Ursprung: Microsoft.Reflection) ScreenUpdate, Debug
 - Feldattribute: (Ursprung: Microsoft.Reflection) Debug
 
-Zufünftige:
+ZufÃ¼nftige:
 - Multithreading-Attribut
 - Korrekte Verwendung des Grafikkontextes "gc"
 
@@ -63,14 +63,15 @@ end
 
 ##Fehler bei Windows XP
 Unable to cast COM object of type System.__ComObject to interface type X 
-- => Lösung:
+- => LÃ¶sung:
 - regsvr32 "C:\Program Files\Internet Explorer\ieproxy.dll"
 
-HttpWebrequests können nicht zu Github aufgebaut werden.
+HttpWebrequests kÃ¶nnen nicht zu Github aufgebaut werden.
 - => Keine Codesnippet-Updates
 
 ##Hinweise
 Um das GUI in dem DevelopmentMode zu bringen, muss eine LunaGUI.debug-Datei im selben Verzeichnis existieren.
+<<<<<<< HEAD
 
 ## Setup
 Systemanforderungen:
@@ -78,3 +79,5 @@ Systemanforderungen:
 
 Download (nur .rar):
 [Windows XP/Vista/7/8/10](https://github.com/DanThePman/Luna-GUI/blob/master/Luna%20GUI/bin/x86/)
+=======
+>>>>>>> origin/master
