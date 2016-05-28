@@ -80,6 +80,7 @@ namespace Luna_GUI._Compiling
                 }
             };
             process.Start();
+            process.WaitForExit();
 
             return tnsOutputPath;
         }
@@ -180,7 +181,8 @@ namespace Luna_GUI._Compiling
             for (int i = functionStartIndex + 1; i < luaLines.Count; i++)
             {
                 string potentialEndLine = luaLines[i];
-                specialLoopsCount += specialLoops.Count(specialLoop => potentialEndLine.Contains(specialLoop));
+                specialLoopsCount += specialLoops.Count(specialLoop => potentialEndLine.Contains(specialLoop) && 
+                    specialLoop.stringNotInText(potentialEndLine));
 
                 if (potentialEndLine.Contains("end") && specialLoopsCount == 0)
                 {
@@ -249,6 +251,20 @@ namespace Luna_GUI._Compiling
             return SearchFunctionStart(luaLines, declIndex) != -1;
         }
 
+        static bool stringNotInText(this string str, string line)
+        {
+            char oneIndexEarlierThanVarStartIndex = line.IndexOf(str) != 0 ?
+                        line[line.IndexOf(str) - 1] : '(';
+            char oneIndexLaterThanVarStartIndex = line.IndexOf(str) + str.Length <= line.Length - 1 ?
+                line[line.IndexOf(str) + str.Length] : ')';
+
+            /*varname not randomly in unknown string included*/
+            bool varNameNotInText = Regex.Matches(oneIndexEarlierThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0 &&
+                Regex.Matches(oneIndexLaterThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0; //e.g. function hELLO()...
+
+            return varNameNotInText;
+        }
+
         static List<string> CheckDeclarationIssues(this List<string> luaLines)
         {
             List<string> issues = new List<string>();
@@ -262,16 +278,7 @@ namespace Luna_GUI._Compiling
                     if (!variableUseLine.Contains(var))
                         return false;
 
-                    char oneIndexEarlierThanVarStartIndex = variableUseLine.IndexOf(var) != 0 ?
-                        variableUseLine[variableUseLine.IndexOf(var) - 1] : '(';
-                    char oneIndexLaterThanVarStartIndex = variableUseLine.IndexOf(var) + var.Length <= variableUseLine.Length - 1 ?
-                        variableUseLine[variableUseLine.IndexOf(var) + var.Length] : ')';
-
-                    /*varname not randomly in unknown string included*/
-                    bool varNameNotInText = Regex.Matches(oneIndexEarlierThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0 &&
-                        Regex.Matches(oneIndexLaterThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0; //e.g. function hELLO()...
-
-                    return varNameNotInText;
+                    return var.stringNotInText(variableUseLine);
                 }).ToList();
 
                 foreach (string varNameOccurrenceInLine in varNameOccurrencesInLuaLine)
@@ -530,13 +537,35 @@ namespace Luna_GUI._Compiling
                 int s = luaLinesTemplate[functionLineIndex].IndexOf("function ") + 9;
                 int e = luaLinesTemplate[functionLineIndex].IndexOf("(");
                 string funcName = luaLinesTemplate[functionLineIndex].Substring(s, e - s);
+
                 string funcAsTempFuncName = luaLinesTemplate[functionLineIndex].Replace(funcName, "");
-                string ThreadVar = $"local {funcName} = coroutine.wrap({funcAsTempFuncName}";
+                string randFuncName = funcName + new Random().Next(int.MaxValue);
+                string ThreadFuncVar = $"local {randFuncName} = coroutine.wrap({funcAsTempFuncName}";
 
-                luaLinesTemplate[functionLineIndex] = ThreadVar;
+                /*remove func code and safe in list*/
+                int removeIndex = functionLineIndex + 1;
+                int funcEndIndex = SearchFunctionEnd(luaLines, functionLineIndex);
+                List<string> functionCodeLines = new List<string>();
+                for (int i = functionLineIndex + 1; i < funcEndIndex; i++)
+                {
+                    functionCodeLines.Add(luaLinesTemplate[removeIndex]);
+                    luaLinesTemplate.RemoveAt(removeIndex);
+                }
+                functionCodeLines.Reverse();
 
-                int endFuncIndex = SearchFunctionEnd(luaLines, functionLineIndex);
-                luaLinesTemplate[endFuncIndex] = "end)";
+                /*createThreadCloneFunc*/
+                luaLinesTemplate.Insert(functionLineIndex, "end");
+                luaLinesTemplate.Insert(functionLineIndex, $"{randFuncName}()");
+                luaLinesTemplate.Insert(functionLineIndex, "end)");
+                foreach (string functionCodeLine in functionCodeLines)
+                {
+                    luaLinesTemplate.Insert(functionLineIndex, functionCodeLine);
+                }
+                luaLinesTemplate.Insert(functionLineIndex, ThreadFuncVar);
+                luaLinesTemplate.Insert(functionLineIndex, $"function ThreadCloneFunc_{funcName}()");
+
+                /*call clone func from original func*/
+                luaLinesTemplate.Insert(functionLineIndex + 6 + functionCodeLines.Count, $"ThreadCloneFunc_{funcName}()");
 
                 /*remove attribute*/
                 luaLinesTemplate.RemoveAt(functionLineIndex - 1);

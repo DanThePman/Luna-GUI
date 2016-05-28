@@ -37,7 +37,7 @@ a = 6
 tostring(a)
 end
 ```
-=======> wird im Hintergrund generiert zu =====>
+im Hintergrund generiert zu
 ```lua
 function onpaint( gc )
 gc:drawString("[DebugActive] "..__errorHandleVar788398410, 150, 5, "top")
@@ -54,6 +54,31 @@ end
 function Funktionsname()
 xpcall( Funktionsname788398410, onFunction788398410_Fail )
 end
+```
+
+
+```lua
+[Thread]
+function funcccccccccccc()
+a = a+1
+if a > 50 then a = 0 end
+platform.window:invalidate()
+end
+```
+zu
+```lua
+function ThreadCloneFunc_funcccccccccccc()
+local funcccccccccccc356293160 = coroutine.wrap(function ()
+a = a+1
+if a > 50 then a = 0 end
+platform.window:invalidate()
+end)
+funcccccccccccc356293160()
+end
+function funcccccccccccc()
+ThreadCloneFunc_funcccccccccccc()
+end
+
 ```
 
 ##Screenshots
