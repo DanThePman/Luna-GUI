@@ -25,6 +25,7 @@ Zufünftige:
 
 
 ##Attribute
+###Debug
 ```lua
 function on.paint( gc )
 Funktionsname()
@@ -54,7 +55,7 @@ function Funktionsname()
 xpcall( Funktionsname788398410, onFunction788398410_Fail )
 end
 ```
-___________________________________________
+###Thread
 ```lua
 [Thread]
 function funcccccccccccc()
@@ -79,7 +80,7 @@ function funcccccccccccc()
 return ThreadCloneFunc_funcccccccccccc()
 end
 ```
-___________________________________________
+###LiveDebug [Alpha]
 ```lua
 function on.paint(gc --[[Grafikgerät]])
 
