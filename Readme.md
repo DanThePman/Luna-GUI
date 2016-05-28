@@ -8,9 +8,9 @@ Ein OffsetFinder-Wizard im Tab "Testing" hilft beim Ermitteln der relativen Fens
 um Dateien automatisch auf den Emulator übertragen zu können.
 
 Hinweise:
-Reload-Button => Gelber Button, der im Dateiuebertragungsfenster steht
-Zielordner-Textfeld => unter Einstellungen->Dateiübertragung das Textfeld neben "Ziel-Ordner"
-Taskleistensymbol => von Firebird
+- Reload-Button => Gelber Button, der im Dateiuebertragungsfenster steht
+- Zielordner-Textfeld => unter Einstellungen->Dateiübertragung das Textfeld neben "Ziel-Ordner"
+- Taskleistensymbol => von Firebird
 
 
 ## CodeAnalyse
@@ -42,7 +42,7 @@ end
 =======> wird im Hintergrund generiert zu =====>
 ```lua
 function onpaint( gc )
-gc:drawString("[DebugError] "..__errorHandleVar788398410, 150, 5, "top")
+gc:drawString("[DebugActive] "..__errorHandleVar788398410, 150, 5, "top")
 Funktionsname()
 end
 function Funktionsname788398410 ()
@@ -63,17 +63,17 @@ Systemanforderungen:
 .Net 4.0 Framework oder neuer
 
 Download (nur .rar):
-[sindresorhus/pageres](https://github.com/DanThePman/Luna-GUI/blob/master/Luna%20GUI/bin/x86/)
+[Windows XP/Vista/7/8/10](https://github.com/DanThePman/Luna-GUI/blob/master/Luna%20GUI/bin/x86/)
 
 
 
 ##Fehler bei Windows XP
 Unable to cast COM object of type System.__ComObject to interface type X 
-=> Lösung:
-regsvr32 "C:\Program Files\Internet Explorer\ieproxy.dll"
+- => Lösung:
+- regsvr32 "C:\Program Files\Internet Explorer\ieproxy.dll"
 
 HttpWebrequests können nicht zu Github aufgebaut werden.
-=> Keine Codesnippet-Updates
+- => Keine Codesnippet-Updates
 
 ##Hinweise
 Um das GUI in dem DevelopmentMode zu bringen, muss eine LunaGUI.debug-Datei im selben Verzeichnis existieren.
