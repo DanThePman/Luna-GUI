@@ -95,52 +95,69 @@ end
 ```
 im Hintergrund generiert zu
 ```lua
-local __liveDebug_enterPressed_myFuncToDebug_liveDebug2117431339 = false
-local __errorHandleVar211743821 = ""
-function OnFieldCall211743821_Fail(err)
-__errorHandleVar211743821 = tostring(err)
+local __liveDebug_enterPressed_myFuncToDebug_liveDebug1433282804 = false
+local __errorHandleVar1671899066 = ""
+function OnFieldCall1671899066_Fail(err)
+__errorHandleVar1671899066 = tostring(err)
 end
-function OnFieldCall211743821()
+function OnFieldCall1671899066()
 local b = 0
 end
-local __errorHandleVar489132464 = ""
-function OnFieldCall489132464_Fail(err)
-__errorHandleVar489132464 = tostring(err)
+local __errorHandleVar826353691 = ""
+function OnFieldCall826353691_Fail(err)
+__errorHandleVar826353691 = tostring(err)
 end
-function OnFieldCall489132464()
+function OnFieldCall826353691()
 tostring(b)
 end
-local myFuncToDebug_liveDebug2117431339 = coroutine.create(function ()
+local myFuncToDebug_liveDebug1433282804 = coroutine.create(function ()
 corountine.yield()
-xpcall( OnFieldCall211743821, OnFieldCall211743821_Fail )
+xpcall( OnFieldCall1671899066, OnFieldCall1671899066_Fail )
 corountine.yield()
-xpcall( OnFieldCall489132464, OnFieldCall489132464_Fail )
+xpcall( OnFieldCall826353691, OnFieldCall826353691_Fail )
 end)
-function ResumeFunc_myFuncToDebug_liveDebug2117431339()
-if coroutine.status(myFuncToDebug_liveDebug2117431339) == "dead" then
-myFuncToDebug_liveDebug2117431339 = coroutine.create(function ()
-corountine.yield()
+local __errorHandleVar718892105 = ""
+function OnFieldCall718892105_Fail(err)
+__errorHandleVar718892105 = tostring(err)
+end
+function OnFieldCall718892105()
 local b = 0
-corountine.yield()
+end
+local __errorHandleVar1856393609 = ""
+function OnFieldCall1856393609_Fail(err)
+__errorHandleVar1856393609 = tostring(err)
+end
+function OnFieldCall1856393609()
 tostring(b)
+end
+function ResumeFunc_myFuncToDebug_liveDebug1433282804()
+if coroutine.status(myFuncToDebug_liveDebug1433282804) == "dead" then
+myFuncToDebug_liveDebug1433282804 = coroutine.create(function ()
+corountine.yield()
+xpcall( OnFieldCall718892105, OnFieldCall718892105_Fail )
+corountine.yield()
+xpcall( OnFieldCall1856393609, OnFieldCall1856393609_Fail )
 end)
 end
-if not coroutine.running(myFuncToDebug_liveDebug2117431339) and __liveDebug_enterPressed_myFuncToDebug_liveDebug2117431339 then
-coroutine.resume(myFuncToDebug_liveDebug2117431339())
-__liveDebug_enterPressed_myFuncToDebug_liveDebug2117431339 = false
+if not coroutine.running(myFuncToDebug_liveDebug1433282804) and __liveDebug_enterPressed_myFuncToDebug_liveDebug1433282804 then
+coroutine.resume(myFuncToDebug_liveDebug1433282804())
+__liveDebug_enterPressed_myFuncToDebug_liveDebug1433282804 = false
 end
 end
 function onpaint(gc --[[Grafikgerät]])
-gc:drawString("[DebugMode] "..__errorHandleVar489132464, 150, 10, "top")
-gc:drawString("[DebugMode] "..__errorHandleVar211743821, 150, 5, "top")
+gc:drawString("[DebugMode] "..__errorHandleVar1856393609, 150, 20, "top")
+gc:drawString("[DebugMode] "..__errorHandleVar718892105, 150, 15, "top")
+gc:drawString("[DebugMode] "..__errorHandleVar826353691, 150, 10, "top")
+gc:drawString("[DebugMode] "..__errorHandleVar1671899066, 150, 5, "top")
 end
 function myFuncToDebug()
-ResumeFunc_myFuncToDebug_liveDebug2117431339()
+ResumeFunc_myFuncToDebug_liveDebug1433282804()
 end
 function ontabKey()
-__liveDebug_enterPressed_myFuncToDebug_liveDebug2117431339 = true
-ResumeFunc_myFuncToDebug_liveDebug2117431339()
+__liveDebug_enterPressed_myFuncToDebug_liveDebug1433282804 = true
+ResumeFunc_myFuncToDebug_liveDebug1433282804()
 end
+
 ```
 
 ##Screenshots

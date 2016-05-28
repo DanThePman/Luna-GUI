@@ -173,6 +173,7 @@ namespace Luna_GUI._Compiling
 
                 ends -= specialLoops.Count(specialLoop => potentialFunctionLine.Contains(specialLoop) &&
                                                           specialLoop.stringNotInText(potentialFunctionLine));
+                if (ends < 0) ends = 0;
                
                 if (potentialFunctionLine.Contains("function")
                     /*&& !potentialFunctionLine.Contains("=") TEMP FUNC OK TOO*/ && ends == 0)
@@ -209,6 +210,7 @@ namespace Luna_GUI._Compiling
                 }
                 else if (potentialEndLine.Contains("end") && "end".stringNotInText(potentialEndLine))
                     specialLoopsCount--;
+                if (specialLoopsCount < 0) specialLoopsCount = 0;
             }
 
             return -1;
@@ -453,6 +455,13 @@ namespace Luna_GUI._Compiling
             {
                 string seed = RandomNumber(int.MaxValue).ToString();
                 int funcStartIndex = SearchFunctionStart(luaLines, fieldIndex);
+                bool startFuncIsTemp = luaLines[funcStartIndex].Contains("function ()") ||
+                                       luaLines[funcStartIndex].Contains("function()");
+                if (startFuncIsTemp)
+                    funcStartIndex = SearchFunctionStart(luaLines, funcStartIndex);
+                if (funcStartIndex == -1) //temp func is first in script
+                    funcStartIndex = SearchFunctionStart(luaLines, fieldIndex);
+
                 string fieldstr = luaLines[fieldIndex];
 
                 List<string> OnFieldCallFunc = new List<string>
@@ -632,6 +641,7 @@ namespace Luna_GUI._Compiling
             }
             else if (funcAttribute == FunctionAttributes.LiveDebug)
             {
+                #region LiveDebug
                 int s = luaLinesTemplate[functionLineIndex].IndexOf("function ") + 9;
                 int e = luaLinesTemplate[functionLineIndex].IndexOf("(");
                 string funcName = luaLinesTemplate[functionLineIndex].Substring(s, e - s);
@@ -690,6 +700,7 @@ namespace Luna_GUI._Compiling
                 foreach (var localCorountineCreateLine in functionCodeLines) //already reversed
                 {
                     ResumeFunc.Add(localCorountineCreateLine);
+                    ResumeFunc.Add("[Debug]");
                     ResumeFunc.Add("corountine.yield()");
                 }
                 ResumeFunc.Add(ThreadFuncVar.Replace("local ", ""));
@@ -703,7 +714,7 @@ namespace Luna_GUI._Compiling
                     luaLinesTemplate.Insert(localVarEnd + 1, VARIABLE);
                 }
 
-                functionLineIndex += 15; //const
+                functionLineIndex += 17; //const
 
                 /*call ResumeFunction at orignial func*/
                 luaLinesTemplate.Insert(functionLineIndex + 1, $"ResumeFunc_{randFuncName}({funcArgs})");
@@ -744,6 +755,7 @@ namespace Luna_GUI._Compiling
 
                 /*remove attribute*/
                 luaLinesTemplate.RemoveAt(functionLineIndex - 1);
+                #endregion
             }
 
             return luaLinesTemplate;
