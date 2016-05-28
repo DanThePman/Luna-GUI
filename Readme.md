@@ -24,7 +24,7 @@ Zufünftige:
 - Live-Debugging (eventuell)
 
 
-##Attribute
+##Attribute - Ursprung: Microsoft.Reflection
 Attribut-Beispiel:
 ```lua
 function on.paint( gc )
