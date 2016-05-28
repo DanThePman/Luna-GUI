@@ -1,5 +1,4 @@
 <img src="icon.png" align="right" />
-[![DanThePman](http://i0.wp.com/bonusdisc.com/wp-content/uploads/2015/08/VS2015.png?fit=1000%2C500)]
 # Luna GUI
 Das Luna GUI sorgt für die Aktualisierung von Code-Snippets innerhalb der Sublime-Text-Entwicklungsumgebung, um effizienter Code 
 fuer den Taschenrechner zu erstellen und besitzt einen integrierten Compiler, der das Erstellen und übertragen von tns-Dateien 
