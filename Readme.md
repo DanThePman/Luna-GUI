@@ -24,8 +24,7 @@ Zufünftige:
 - Live-Debugging (eventuell)
 
 
-##Attribute - Ursprung: Microsoft.Reflection
-Attribut-Beispiel:
+##Attribute
 ```lua
 function on.paint( gc )
 Funktionsname()
@@ -78,6 +77,67 @@ return funcccccccccccc1458243235()
 end
 function funcccccccccccc()
 return ThreadCloneFunc_funcccccccccccc()
+end
+```
+___________________________________________
+```lua
+function on.paint(gc --[[Grafikgerät]])
+
+end
+
+[LiveDebug]
+function myFuncToDebug()
+local b = 0
+tostring(b)
+end
+```
+im Hintergrund generiert zu
+```lua
+local __liveDebug_enterPressed_myFuncToDebug_liveDebug2117431339 = false
+local __errorHandleVar211743821 = ""
+function OnFieldCall211743821_Fail(err)
+__errorHandleVar211743821 = tostring(err)
+end
+function OnFieldCall211743821()
+local b = 0
+end
+local __errorHandleVar489132464 = ""
+function OnFieldCall489132464_Fail(err)
+__errorHandleVar489132464 = tostring(err)
+end
+function OnFieldCall489132464()
+tostring(b)
+end
+local myFuncToDebug_liveDebug2117431339 = coroutine.create(function ()
+corountine.yield()
+xpcall( OnFieldCall211743821, OnFieldCall211743821_Fail )
+corountine.yield()
+xpcall( OnFieldCall489132464, OnFieldCall489132464_Fail )
+end)
+function ResumeFunc_myFuncToDebug_liveDebug2117431339()
+if coroutine.status(myFuncToDebug_liveDebug2117431339) == "dead" then
+myFuncToDebug_liveDebug2117431339 = coroutine.create(function ()
+corountine.yield()
+local b = 0
+corountine.yield()
+tostring(b)
+end)
+end
+if not coroutine.running(myFuncToDebug_liveDebug2117431339) and __liveDebug_enterPressed_myFuncToDebug_liveDebug2117431339 then
+coroutine.resume(myFuncToDebug_liveDebug2117431339())
+__liveDebug_enterPressed_myFuncToDebug_liveDebug2117431339 = false
+end
+end
+function onpaint(gc --[[Grafikgerät]])
+gc:drawString("[DebugMode] "..__errorHandleVar489132464, 150, 10, "top")
+gc:drawString("[DebugMode] "..__errorHandleVar211743821, 150, 5, "top")
+end
+function myFuncToDebug()
+ResumeFunc_myFuncToDebug_liveDebug2117431339()
+end
+function ontabKey()
+__liveDebug_enterPressed_myFuncToDebug_liveDebug2117431339 = true
+ResumeFunc_myFuncToDebug_liveDebug2117431339()
 end
 ```
 

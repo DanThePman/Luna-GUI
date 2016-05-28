@@ -27,7 +27,7 @@ namespace Luna_GUI._Compiling
             public string GetLuaLinesFile()
             {
                 string path = Path.Combine(Path.GetTempPath(),
-                    "CompileFileForLuna" + new Random().Next(int.MaxValue) + ".lua");
+                    "CompileFileForLuna" + RandomNumber(int.MaxValue) + ".lua");
                 CompileFileForLunaPath = path;
 
                 using (StreamWriter sw = new StreamWriter(path))
@@ -100,6 +100,15 @@ namespace Luna_GUI._Compiling
             return lines.Where(x => x.Length > 0).ToList();
         }
 
+        private static readonly Random random = new Random();
+        private static readonly object syncLock = new object();
+        public static int RandomNumber(int max)
+        {
+            lock (syncLock)
+            { // synchronize
+                return random.Next(max);
+            }
+        }
         static List<string> ReplaceEvents(this List<string> luaLines)
         {
             return luaLines.Select(luaLine => luaLine.Contains("function on.") ? luaLine.Replace(".", "") : luaLine).ToList();
@@ -165,7 +174,7 @@ namespace Luna_GUI._Compiling
                 ends -= specialLoops.Count(specialLoop => potentialFunctionLine.Contains(specialLoop) &&
                                                           specialLoop.stringNotInText(potentialFunctionLine));
                
-                if (potentialFunctionLine.Contains("function") 
+                if (potentialFunctionLine.Contains("function")
                     /*&& !potentialFunctionLine.Contains("=") TEMP FUNC OK TOO*/ && ends == 0)
                     return i;
             }
@@ -316,12 +325,12 @@ namespace Luna_GUI._Compiling
                     }
                     else //var theoretically accessable but maybe declared too late
                     {
-                        if (currentLineIndex < declIndex)
+                        if (currentLineIndex < declIndex) //only too late definition only at global vars
                         {
                             string varName = variableNames.First(variableUseLine.Contains);
                             issues.Add("'" + varName +
                                    "' => [CompilingAnalysis] The variable's declaration is too late in code at'" +
-                                   declLine + "'");
+                                   declLine + $"'\nMaximum allowed declaration line: {SearchFunctionStart(luaLines, currentLineIndex) - 1}");
                         }
                     }
                 }
@@ -330,54 +339,6 @@ namespace Luna_GUI._Compiling
             return issues;
         }
 
-        private static void GetVariableDeclarationLines(List<string> luaLines, 
-            out List<string> variableNames, out List<string> variableDeclarationLines)
-        {
-            variableNames = new List<string>();
-            variableDeclarationLines = new List<string>();
-            for (int i = 0; i < luaLines.Count; i++)
-            {
-                string luaLine = luaLines[i];
-                int indexOfEqual = luaLine.IndexOf("=");
-                bool isVarSet = luaLine.Contains("=") && luaLine.Count(x => x == '=') == 1 &&
-                                luaLine.Any(charr => luaLine.IndexOf(charr) < indexOfEqual);
-                if (!isVarSet && luaLine.Contains("local ") && !luaLine.Contains("local function"))
-                {
-                    isVarSet = true;
-                }
-
-                Func<bool> alreadyDeclaredGlobally = () =>
-                {
-                    for (int j = 0; j < luaLines.Count; j++)
-                    {
-                        if (i == j) continue;
-
-                        string luaLine2 = luaLines[j];
-                        int indexOfEqual2 = luaLine2.IndexOf("=");
-                        bool isVarSet2 = luaLine2.Contains("=") && luaLine2.Count(x => x == '=') == 1 &&
-                                        luaLine2.Any(charr => luaLine2.IndexOf(charr) < indexOfEqual2);
-                        if (!isVarSet2 && luaLine2.Contains("local ") && !luaLine2.Contains("local function"))
-                        {
-                            isVarSet2 = true;
-                        }
-
-                        if (isVarSet2 && luaLine2.GetVariableName() == luaLine.GetVariableName()) /*other delcaration found*/
-                        {
-                            if (!luaLine2.IsInMethodScope(luaLines, j))
-                                return true;
-                        }
-                    }
-
-                    return false;
-                };
-
-                if (isVarSet&& !alreadyDeclaredGlobally())
-                {
-                    variableNames.Add(luaLine.GetVariableName());
-                    variableDeclarationLines.Add(luaLine);
-                }
-            }
-        }
         private static void GetVariableDeclarationLines(List<string> luaLines,
             out List<string> variableNames, out List<string> variableDeclarationLines, out List<int> varDeclIndexes)
         {
@@ -475,16 +436,7 @@ namespace Luna_GUI._Compiling
                 string currentLuaLine = luaLines[i];
                 if (currentLuaLine.Contains($"[{fieldAttribute.ToString("G")}]"))
                 {
-                    List<string> variableNames, variableDeclarationLines;
-                    GetVariableDeclarationLines(luaLines, out variableNames, out variableDeclarationLines);
-
-                    bool isAttributeOfField = variableNames.Any(luaLines[i + 1].Contains) || 
-                        variableDeclarationLines.Any(luaLines[i + 1].Equals);
-
-                    if (isAttributeOfField)
-                    {
-                        luaTemplateLines = HandleFieldAttribute(luaTemplateLines, fieldAttribute, i);
-                    }
+                    luaTemplateLines = HandleFieldAttribute(luaTemplateLines, fieldAttribute, i);
                 }
             }
 
@@ -499,8 +451,7 @@ namespace Luna_GUI._Compiling
 
             if (fieldAttribute == FieldAttributes.Debug)
             {
-                Random rand = new Random();
-                string seed = rand.Next(int.MaxValue).ToString();
+                string seed = RandomNumber(int.MaxValue).ToString();
                 int funcStartIndex = SearchFunctionStart(luaLines, fieldIndex);
                 string fieldstr = luaLines[fieldIndex];
 
@@ -538,7 +489,7 @@ namespace Luna_GUI._Compiling
 
                 int errorHandleCount = luaTemplateLines.Count(x => x.Contains("local __errorHandleVar"));
                 luaTemplateLines.Insert(luaTemplateLines.FindIndex(
-                    x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{seed}," +
+                    x => x.Contains("function onpaint")) + 1, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{seed}," +
                                                                  $" 150, {5 * errorHandleCount}, \"top\")");
             }
 
@@ -578,8 +529,7 @@ namespace Luna_GUI._Compiling
                 }
 
                 /*create detour func*/
-                Random seed = new Random();
-                string randFunctionSeed = seed.Next(int.MaxValue).ToString();
+                string randFunctionSeed = RandomNumber(int.MaxValue).ToString();
                 string detourFunctionName =
                     luaLinesTemplate[functionLineIndex].Substring(luaLinesTemplate[functionLineIndex].IndexOf("function ") + 9,
                         luaLinesTemplate[functionLineIndex].IndexOf("(") -
@@ -635,7 +585,7 @@ namespace Luna_GUI._Compiling
                 string funcArgs = luaLinesTemplate[functionLineIndex].Substring(s3, e3 - s3).Replace(" ", "");
 
                 string funcAsTempFuncName = luaLinesTemplate[functionLineIndex].Replace(funcName, "");
-                string randFuncName = funcName + new Random().Next(int.MaxValue);
+                string randFuncName = funcName + RandomNumber(int.MaxValue);
                 string ThreadFuncVar = $"local {randFuncName} = coroutine.wrap({funcAsTempFuncName}";
 
                 /*remove func code and safe in list*/
@@ -682,7 +632,118 @@ namespace Luna_GUI._Compiling
             }
             else if (funcAttribute == FunctionAttributes.LiveDebug)
             {
-                
+                int s = luaLinesTemplate[functionLineIndex].IndexOf("function ") + 9;
+                int e = luaLinesTemplate[functionLineIndex].IndexOf("(");
+                string funcName = luaLinesTemplate[functionLineIndex].Substring(s, e - s);
+
+                int s3 = luaLinesTemplate[functionLineIndex].IndexOf("(") + 1;
+                int e3 = luaLinesTemplate[functionLineIndex].IndexOf(")");
+                string funcArgs = luaLinesTemplate[functionLineIndex].Substring(s3, e3 - s3).Replace(" ", "");
+
+                string funcAsTempFuncName = luaLinesTemplate[functionLineIndex].Replace(funcName, "");
+                string randFuncName = funcName + "_liveDebug" + RandomNumber(int.MaxValue);
+                string ThreadFuncVar = $"local {randFuncName} = coroutine.create({funcAsTempFuncName}";
+
+                /*remove func code and safe in list*/
+                int removeIndex = functionLineIndex + 1;
+                int funcEndIndex = SearchFunctionEnd(luaLines, functionLineIndex);
+                List<string> functionCodeLines = new List<string>();
+                for (int i = functionLineIndex + 1; i < funcEndIndex; i++)
+                {
+                    if (luaLinesTemplate[removeIndex].Contains("return "))
+                    {
+                        return new List<string> { "[Error] LiveDebug-Function is not allowed to return a value" };
+                    }
+                    else
+                        functionCodeLines.Add(luaLinesTemplate[removeIndex]);
+                    luaLinesTemplate.RemoveAt(removeIndex);
+                }
+                functionCodeLines.Reverse();
+
+                /*create local corountine.create var*/
+                luaLinesTemplate.Insert(0, "end)");
+                foreach (var localCorountineCreateLine in functionCodeLines)
+                {
+                    luaLinesTemplate.Insert(0, localCorountineCreateLine);
+                    luaLinesTemplate.Insert(0, "[Debug]");
+                    luaLinesTemplate.Insert(0, "corountine.yield()");                  
+                }
+                luaLinesTemplate.Insert(0, ThreadFuncVar);
+                luaLinesTemplate.Insert(0, $"local __liveDebug_enterPressed_{randFuncName} = false");
+
+                functionLineIndex += 2 + functionCodeLines.Count*3;
+
+                /*create ResumeFunc*/
+                List<string> ResumeFunc = new List<string>
+                {
+                    "end", //ResumeFunc end
+
+                    "end",//second if (running && enterpressed)
+                    $"__liveDebug_enterPressed_{randFuncName} = false",
+                    $"coroutine.resume({randFuncName}({funcArgs}))",
+                    $"if not coroutine.running({randFuncName}) and __liveDebug_enterPressed_{randFuncName} then",
+
+
+                    "end",//if end
+                    "end)"//temp func end
+                };
+                foreach (var localCorountineCreateLine in functionCodeLines) //already reversed
+                {
+                    ResumeFunc.Add(localCorountineCreateLine);
+                    ResumeFunc.Add("corountine.yield()");
+                }
+                ResumeFunc.Add(ThreadFuncVar.Replace("local ", ""));
+                ResumeFunc.Add($"if coroutine.status({randFuncName}) == \"dead\" then");
+                ResumeFunc.Add($"function ResumeFunc_{randFuncName}({funcArgs})");
+
+                int localVarEnd = luaLinesTemplate.FindIndex(x => x == ThreadFuncVar) + functionCodeLines.Count * 3 + 1;
+                /*create ResumeFunction*/
+                foreach (var VARIABLE in ResumeFunc)
+                {
+                    luaLinesTemplate.Insert(localVarEnd + 1, VARIABLE);
+                }
+
+                functionLineIndex += 15; //const
+
+                /*call ResumeFunction at orignial func*/
+                luaLinesTemplate.Insert(functionLineIndex + 1, $"ResumeFunc_{randFuncName}({funcArgs})");
+
+
+                /*set on.tabKey function up*/
+                int enterKeyFuncIndex = luaLinesTemplate.FindIndex(x => x.Contains("function ontabKey"));
+                if (enterKeyFuncIndex == -1)
+                {
+                    List<string> onTabKeySetup = new List<string>
+                    {
+                        "function on.tabKey()",
+                        $"__liveDebug_enterPressed_{randFuncName} = true",
+                        $"ResumeFunc_{randFuncName}({funcArgs})",
+                        "end"
+                    };
+                    //onTabKeySetup.Reverse();
+
+                    foreach (var VARIABLE in onTabKeySetup)
+                    {
+                        luaLinesTemplate.Insert(luaLinesTemplate.Count, VARIABLE);
+                    }
+                }
+                else
+                {
+                    List<string> onTabKeySetup = new List<string>
+                    {
+                        $"__liveDebug_enterPressed_{randFuncName} = true",
+                        $"ResumeFunc_{randFuncName}({funcArgs})",
+                    };
+                    onTabKeySetup.Reverse();
+
+                    foreach (var VARIABLE in onTabKeySetup)
+                    {
+                        luaLinesTemplate.Insert(enterKeyFuncIndex + 1, VARIABLE);
+                    }
+                }
+
+                /*remove attribute*/
+                luaLinesTemplate.RemoveAt(functionLineIndex - 1);
             }
 
             return luaLinesTemplate;
@@ -776,7 +837,7 @@ namespace Luna_GUI._Compiling
                 Cast<FunctionAttributes>().OrderBy(x => x == FunctionAttributes.LiveDebug))
             {
                 bool err = false;
-                var output = lines.CheckFunctionAttribute((FunctionAttributes)funcAttribute, out err);
+                var output = lines.CheckFunctionAttribute(funcAttribute, out err);
 
                 if (err)
                     attributeErros.AddRange(output);
