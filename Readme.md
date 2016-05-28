@@ -55,8 +55,7 @@ function Funktionsname()
 xpcall( Funktionsname788398410, onFunction788398410_Fail )
 end
 ```
-
-
+___________________________________________
 ```lua
 [Thread]
 function funcccccccccccc()
@@ -65,7 +64,7 @@ if a > 50 then a = 0 end
 platform.window:invalidate()
 end
 ```
-zu
+im Hintergrund generiert zu
 ```lua
 function ThreadCloneFunc_funcccccccccccc()
 local funcccccccccccc356293160 = coroutine.wrap(function ()
