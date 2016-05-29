@@ -17,7 +17,7 @@ Aktuelle Funktionen:
 - MoonSharp Lua-Compiler
 - Eventkonvertierung
 - Deklarationsüberprüfung
-- Funktions-Attribute: ScreenUpdate, Thread, Debug, LiveDebug (noch in Entwicklung)
+- Funktions-Attribute: ScreenUpdate, Thread, Debug (in Entwicklung), LiveDebug (in Entwicklung)
 - Feld-Attribute: Debug
 
 
@@ -98,76 +98,86 @@ end
 im Hintergrund generiert zu
 ```lua
 local testvar = 0
-local __liveDebug_enterPressed_myFuncToDebug_liveDebug964698839 = false
-local __errorHandleVar1494363505 = ""
-function OnFieldCall1494363505_Fail(err)
-__errorHandleVar1494363505 = tostring(err)
+local __liveDebug_enterPressed_myFuncToDebug_liveDebug625038151 = false
+local __liveDebug_currentCodePosition_myFuncToDebug_liveDebug625038151 = ""
+local __errorHandleVar309349895 = ""
+function OnFieldCall309349895_Fail(err)
+__errorHandleVar309349895 = tostring(err)
 end
-function OnFieldCall1494363505()
+function OnFieldCall309349895()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-local __errorHandleVar1089847783 = ""
-function OnFieldCall1089847783_Fail(err)
-__errorHandleVar1089847783 = tostring(err)
+local __errorHandleVar858366422 = ""
+function OnFieldCall858366422_Fail(err)
+__errorHandleVar858366422 = tostring(err)
 end
-function OnFieldCall1089847783()
+function OnFieldCall858366422()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-local myFuncToDebug_liveDebug964698839 = coroutine.create(function ()
+local myFuncToDebug_liveDebug625038151 = coroutine.create(function ()
 coroutine.yield()
-xpcall( OnFieldCall1494363505, OnFieldCall1494363505_Fail )
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug625038151 = "testvar = testvar + 1"
+platform.window:invalidate()
+xpcall( OnFieldCall309349895, OnFieldCall309349895_Fail )
 coroutine.yield()
-xpcall( OnFieldCall1089847783, OnFieldCall1089847783_Fail )
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug625038151 = "testvar = testvar + 1"
+platform.window:invalidate()
+xpcall( OnFieldCall858366422, OnFieldCall858366422_Fail )
 end)
-local __errorHandleVar1868329146 = ""
-function OnFieldCall1868329146_Fail(err)
-__errorHandleVar1868329146 = tostring(err)
+local __errorHandleVar1454842491 = ""
+function OnFieldCall1454842491_Fail(err)
+__errorHandleVar1454842491 = tostring(err)
 end
-function OnFieldCall1868329146()
+function OnFieldCall1454842491()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-local __errorHandleVar1919796017 = ""
-function OnFieldCall1919796017_Fail(err)
-__errorHandleVar1919796017 = tostring(err)
+local __errorHandleVar203422852 = ""
+function OnFieldCall203422852_Fail(err)
+__errorHandleVar203422852 = tostring(err)
 end
-function OnFieldCall1919796017()
+function OnFieldCall203422852()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-function ResumeFunc_myFuncToDebug_liveDebug964698839()
-if coroutine.status(myFuncToDebug_liveDebug964698839) == "dead" then
-myFuncToDebug_liveDebug964698839 = coroutine.create(function ()
+function ResumeFunc_myFuncToDebug_liveDebug625038151()
+if coroutine.status(myFuncToDebug_liveDebug625038151) == "dead" then
+myFuncToDebug_liveDebug625038151 = coroutine.create(function ()
 coroutine.yield()
-xpcall( OnFieldCall1868329146, OnFieldCall1868329146_Fail )
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug625038151 = "testvar = testvar + 1"
+platform.window:invalidate()
+xpcall( OnFieldCall1454842491, OnFieldCall1454842491_Fail )
 coroutine.yield()
-xpcall( OnFieldCall1919796017, OnFieldCall1919796017_Fail )
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug625038151 = "testvar = testvar + 1"
+platform.window:invalidate()
+xpcall( OnFieldCall203422852, OnFieldCall203422852_Fail )
 end)
 end
-if not coroutine.running(myFuncToDebug_liveDebug964698839) and __liveDebug_enterPressed_myFuncToDebug_liveDebug964698839 then
-coroutine.resume(myFuncToDebug_liveDebug964698839)
-__liveDebug_enterPressed_myFuncToDebug_liveDebug964698839 = false
+if not coroutine.running(myFuncToDebug_liveDebug625038151) and __liveDebug_enterPressed_myFuncToDebug_liveDebug625038151 then
+coroutine.resume(myFuncToDebug_liveDebug625038151)
+__liveDebug_enterPressed_myFuncToDebug_liveDebug625038151 = false
 end
 end
 function myFuncToDebug()
-ResumeFunc_myFuncToDebug_liveDebug964698839()
+ResumeFunc_myFuncToDebug_liveDebug625038151()
 end
 function onpaint(gc --[[Grafikgerät]])
-gc:drawString("[DebugMode] "..__errorHandleVar1919796017, 150, 52, "top")
-gc:drawString("[DebugMode] "..__errorHandleVar1868329146, 150, 39, "top")
-gc:drawString("[DebugMode] "..__errorHandleVar1089847783, 150, 26, "top")
-gc:drawString("[DebugMode] "..__errorHandleVar1494363505, 150, 13, "top")
+gc:drawString("[DebugMode] "..__errorHandleVar203422852, 150, 52, "top")
+gc:drawString("[DebugMode] "..__errorHandleVar1454842491, 150, 39, "top")
+gc:drawString("[DebugMode] "..__errorHandleVar858366422, 150, 26, "top")
+gc:drawString("[DebugMode] "..__errorHandleVar309349895, 150, 13, "top")
+gc:drawString("[DebugPos]"..__liveDebug_currentCodePosition_myFuncToDebug_liveDebug625038151, 0 , platform.window:height() - 15, "top")
 myFuncToDebug()
 gc:drawString(tostring(testvar), 50, 50, "top")
 end
 function ontabKey()
-__liveDebug_enterPressed_myFuncToDebug_liveDebug964698839 = true
-ResumeFunc_myFuncToDebug_liveDebug964698839()
+__liveDebug_enterPressed_myFuncToDebug_liveDebug625038151 = true
+ResumeFunc_myFuncToDebug_liveDebug625038151()
 end
 ```
-Fehlend: Anzeige für die aktuelle Code-Position
+Beinhaltet: StackTrace
 
 ##Screenshots
 ![Image](https://raw.githubusercontent.com/DanThePman/Luna-GUI/master/luaGuiMenu.png)
