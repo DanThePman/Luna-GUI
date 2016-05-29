@@ -86,7 +86,7 @@ local testvar = 0
 function myFuncToDebug()
 testvar = testvar + 1
 platform.window:invalidate()
-testvar = testvar + 1
+testvar = testvar + 2
 platform.window:invalidate()
 end
 
@@ -98,81 +98,92 @@ end
 im Hintergrund generiert zu
 ```lua
 local testvar = 0
-local __liveDebug_enterPressed_myFuncToDebug_liveDebug1720878949 = false
-local __liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "Not started"
-local __errorHandleVar1600202380 = ""
-function OnFieldCall1600202380_Fail(err)
-__errorHandleVar1600202380 = tostring(err)
+local __liveDebug_currentCodePosition_myFuncToDebug_liveDebug1001730213 = "No calls of LiveDebug-Function"
+local __liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 = 0
+local __liveDebug_enterPressed_myFuncToDebug_liveDebug1001730213 = false
+local __errorHandleVar1353102104 = ""
+function OnFieldCall1353102104_Fail(err)
+__errorHandleVar1353102104 = tostring(err)
 end
-function OnFieldCall1600202380()
+function OnFieldCall1353102104()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-local __errorHandleVar1546312225 = ""
-function OnFieldCall1546312225_Fail(err)
-__errorHandleVar1546312225 = tostring(err)
+local __errorHandleVar1221188607 = ""
+function OnFieldCall1221188607_Fail(err)
+__errorHandleVar1221188607 = tostring(err)
 end
-function OnFieldCall1546312225()
-testvar = testvar + 1
+function OnFieldCall1221188607()
+testvar = testvar + 2
 platform.window:invalidate()
 end
-local myFuncToDebug_liveDebug1720878949 = coroutine.create(function ()
-__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "testvar = testvar + 1"
+local myFuncToDebug_liveDebug1001730213 = coroutine.create(function ()
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1001730213 = "testvar = testvar + 1"
+__liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 = __liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 + platform.window:width()/2
 platform.window:invalidate()
-xpcall( OnFieldCall1600202380, OnFieldCall1600202380_Fail )
+xpcall( OnFieldCall1353102104, OnFieldCall1353102104_Fail )
 coroutine.yield()
-__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "testvar = testvar + 1"
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1001730213 = "testvar = testvar + 2"
+__liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 = __liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 + platform.window:width()/2
 platform.window:invalidate()
-xpcall( OnFieldCall1546312225, OnFieldCall1546312225_Fail )
+xpcall( OnFieldCall1221188607, OnFieldCall1221188607_Fail )
 end)
-local __errorHandleVar193951612 = ""
-function OnFieldCall193951612_Fail(err)
-__errorHandleVar193951612 = tostring(err)
+local __errorHandleVar1161861833 = ""
+function OnFieldCall1161861833_Fail(err)
+__errorHandleVar1161861833 = tostring(err)
 end
-function OnFieldCall193951612()
+function OnFieldCall1161861833()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-local __errorHandleVar412950835 = ""
-function OnFieldCall412950835_Fail(err)
-__errorHandleVar412950835 = tostring(err)
+local __errorHandleVar1637862169 = ""
+function OnFieldCall1637862169_Fail(err)
+__errorHandleVar1637862169 = tostring(err)
 end
-function OnFieldCall412950835()
-testvar = testvar + 1
+function OnFieldCall1637862169()
+testvar = testvar + 2
 platform.window:invalidate()
 end
-function ResumeFunc_myFuncToDebug_liveDebug1720878949()
-if coroutine.status(myFuncToDebug_liveDebug1720878949) == "dead" then
-myFuncToDebug_liveDebug1720878949 = coroutine.create(function ()
-__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "testvar = testvar + 1"
+function ResumeFunc_myFuncToDebug_liveDebug1001730213()
+if coroutine.status(myFuncToDebug_liveDebug1001730213) == "dead" then
+myFuncToDebug_liveDebug1001730213 = coroutine.create(function ()
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1001730213 = "testvar = testvar + 1"
+__liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 = __liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 + platform.window:width()/2
 platform.window:invalidate()
-xpcall( OnFieldCall193951612, OnFieldCall193951612_Fail )
+xpcall( OnFieldCall1161861833, OnFieldCall1161861833_Fail )
 coroutine.yield()
-__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "testvar = testvar + 1"
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1001730213 = "testvar = testvar + 2"
+__liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 = __liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 + platform.window:width()/2
 platform.window:invalidate()
-xpcall( OnFieldCall412950835, OnFieldCall412950835_Fail )
+xpcall( OnFieldCall1637862169, OnFieldCall1637862169_Fail )
 end)
 end
-if not coroutine.running(myFuncToDebug_liveDebug1720878949) and __liveDebug_enterPressed_myFuncToDebug_liveDebug1720878949 then
-coroutine.resume(myFuncToDebug_liveDebug1720878949)
-__liveDebug_enterPressed_myFuncToDebug_liveDebug1720878949 = false
+if not coroutine.running(myFuncToDebug_liveDebug1001730213) and __liveDebug_enterPressed_myFuncToDebug_liveDebug1001730213 then
+coroutine.resume(myFuncToDebug_liveDebug1001730213)
+__liveDebug_enterPressed_myFuncToDebug_liveDebug1001730213 = false
 end
 end
 function myFuncToDebug()
-ResumeFunc_myFuncToDebug_liveDebug1720878949()
+ResumeFunc_myFuncToDebug_liveDebug1001730213()
 end
-function on.paint(gc --[[Grafikgerät]])
-if __errorHandleVar412950835 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar412950835, 0, platform.window:height() - 20, "top") end
-if __errorHandleVar193951612 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar193951612, 0, platform.window:height() - 20, "top") end
-if __errorHandleVar1546312225 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1546312225, 0, platform.window:height() - 20, "top") end
-if __errorHandleVar1600202380 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1600202380, 0, platform.window:height() - 20, "top") end
-gc:drawString("[LastCall]"..__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949, 0 , platform.window:height() - 20, "top")
+function onpaint(gc --[[Grafikgerät]])
+if __errorHandleVar1637862169 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1637862169, 0, platform.window:height() - 40, "top") end
+if __errorHandleVar1161861833 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1161861833, 0, platform.window:height() - 40, "top") end
+if __errorHandleVar1221188607 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1221188607, 0, platform.window:height() - 40, "top") end
+if __errorHandleVar1353102104 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1353102104, 0, platform.window:height() - 40, "top") end
+__liveDebugPreviousFont_myFuncToDebug_liveDebug1001730213 = gc:setFont("serif","bi",8)
+gc:drawString("[StackTrace]"..__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1001730213, 0 , platform.window:height() - 10, "top")
+gc:setFont(__liveDebugPreviousFont_myFuncToDebug_liveDebug1001730213,"r",10)
+gc:setColorRGB(255, 0, 0)
+gc:fillRect(0,0,__liveDebug_currentStep_myFuncToDebug_liveDebug1001730213,3)
+gc:setColorRGB(0, 0, 0)
 myFuncToDebug()
 gc:drawString(tostring(testvar), 50, 50, "top")
 end
-function on.tabKey()
-__liveDebug_enterPressed_myFuncToDebug_liveDebug1720878949 = true
-ResumeFunc_myFuncToDebug_liveDebug1720878949()
+function ontabKey()
+__liveDebug_enterPressed_myFuncToDebug_liveDebug1001730213 = true
+if __liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 > platform.window:width() - 1 then __liveDebug_currentStep_myFuncToDebug_liveDebug1001730213 = 0 end
+ResumeFunc_myFuncToDebug_liveDebug1001730213()
 end
 ```
 
