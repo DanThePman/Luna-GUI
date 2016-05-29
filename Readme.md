@@ -77,9 +77,8 @@ function funcccccccccccc()
 return ThreadCloneFunc_funcccccccccccc()
 end
 ```
-###LiveDebug - mit StackTrace
+###LiveDebugging - mit StackTrace
 ![Image](https://raw.githubusercontent.com/DanThePman/Luna-GUI/master/liveDebugExplanation.png)
-[Beispiel](https://www.youtube.com/watch?v=qY5rIAwBt14)
 ```lua
 local testvar = 0
 
