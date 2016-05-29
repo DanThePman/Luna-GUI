@@ -512,7 +512,7 @@ namespace Luna_GUI._Compiling
 
                 int errorHandleCount = luaTemplateLines.Count(x => x.Contains("local __errorHandleVar"));
                 luaTemplateLines.Insert(luaTemplateLines.FindIndex(
-                   x => x.Contains("function onpaint")) + 1, $"if __errorHandleVar{seed} ~= \"\" then gc:drawString(\"[DebugError] \"..__errorHandleVar{seed}, 0, platform.window:height() - {20 /**errorHandleCount*/}, \"top\") end");
+                   x => x.Contains("function onpaint")) + 1, $"if __errorHandleVar{seed} ~= \"\" then gc:drawString(\"[DebugError] \"..__errorHandleVar{seed}, 0, platform.window:height() - {40 /**errorHandleCount*/}, \"top\") end");
             }
 
             return luaTemplateLines;
@@ -591,7 +591,7 @@ namespace Luna_GUI._Compiling
 
                 int errorHandleCount = luaLinesTemplate.Count(x => x.Contains("local __errorHandleVar"));
                 luaLinesTemplate.Insert(luaLinesTemplate.FindIndex(
-                    x => x.Contains("function onpaint")) + 1, $"if __errorHandleVar{randFunctionSeed} ~= \"\" then gc:drawString(\"[DebugError] \"..__errorHandleVar{randFunctionSeed}, 0, platform.window:height() - {20 /**errorHandleCount*/}, \"top\") end");
+                    x => x.Contains("function onpaint")) + 1, $"if __errorHandleVar{randFunctionSeed} ~= \"\" then gc:drawString(\"[DebugError] \"..__errorHandleVar{randFunctionSeed}, 0, platform.window:height() - {40 /**errorHandleCount*/}, \"top\") end");
                 #endregion
             }
             else if (funcAttribute == FunctionAttributes.Thread)
