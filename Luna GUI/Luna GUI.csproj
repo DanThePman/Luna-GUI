@@ -98,6 +98,7 @@
     <Compile Include="Testing.cs" />
     <Compile Include="WindowManager.cs" />
     <Compile Include="_Compiling\CompilingAnalysis.cs" />
+    <Compile Include="_Compiling\LiveDebugging.cs" />
     <Compile Include="_Compiling\ResourceManager.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

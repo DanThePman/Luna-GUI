@@ -653,149 +653,30 @@ namespace Luna_GUI._Compiling
             }
             else if (funcAttribute == FunctionAttributes.LiveDebug)
             {
+                LiveDebugging.functionLineIndex = functionLineIndex;
                 #region LiveDebug
                 /*remove attribute*/
-                luaLinesTemplate.RemoveAt(functionLineIndex - 1);
-                functionLineIndex--;
-                
-                int s = luaLinesTemplate[functionLineIndex].IndexOf("function ") + 9;
-                int e = luaLinesTemplate[functionLineIndex].IndexOf("(");
-                string funcName = luaLinesTemplate[functionLineIndex].Substring(s, e - s);
+                LiveDebugging.RemoveAttribute(ref luaLinesTemplate);
 
-                int s3 = luaLinesTemplate[functionLineIndex].IndexOf("(") + 1;
-                int e3 = luaLinesTemplate[functionLineIndex].IndexOf(")");
-                string funcArgs = luaLinesTemplate[functionLineIndex].Substring(s3, e3 - s3).Replace(" ", "");
-
-                string funcAsTempFuncName = luaLinesTemplate[functionLineIndex].Replace(funcName, "");
-                string randFuncName = funcName + "_liveDebug" + RandomNumber(int.MaxValue);
-                string ThreadFuncVar = $"local {randFuncName} = coroutine.create({funcAsTempFuncName}";
+                string funcArgs = LiveDebugging.GetFuncArgs(luaLinesTemplate);
+                string randFuncName;
+                string ThreadFuncVar = LiveDebugging.GetLocalCoroutineVariable(luaLinesTemplate, out randFuncName);
 
                 /*remove func code and safe in list*/
-                int removeIndex = functionLineIndex + 1;
                 int funcEndIndex = SearchFunctionEnd(luaLines, functionLineIndex);
-                List<string> functionCodeLines = new List<string>();
-                for (int i = functionLineIndex + 1; i < funcEndIndex; i++)
-                {
-                    if (luaLinesTemplate[removeIndex].Contains("return "))
-                    {
-                        return new List<string> { "[Error] LiveDebug-Function is not allowed to return a value" };
-                    }
-                    else
-                        functionCodeLines.Add(luaLinesTemplate[removeIndex]);
-                    luaLinesTemplate.RemoveAt(removeIndex);
-                }
-                functionCodeLines.Reverse();
+                List<string> functionCodeLines = LiveDebugging.GetOriginalFuncCode(ref luaLinesTemplate, funcEndIndex);
 
                 /*create local coroutine.create var*/
-                luaLinesTemplate.Insert(functionLineIndex, "end)");
-                for (int i = 0; i < functionCodeLines.Count; i++)
-                {
-                    var localCoroutineCreateLine = functionCodeLines[i];
-                    luaLinesTemplate.Insert(functionLineIndex, localCoroutineCreateLine);
-                    if (!localCoroutineCreateLine.Equals("platform.window:invalidate()"))
-                    {
-                        /*before / reversed*/
-                        luaLinesTemplate.Insert(functionLineIndex, "[Debug]");
-                        luaLinesTemplate.Insert(functionLineIndex, "platform.window:invalidate()");
-                        luaLinesTemplate.Insert(functionLineIndex,
-                            $"__liveDebug_currentCodePosition_{randFuncName} = \"{localCoroutineCreateLine}\"");
+                LiveDebugging.CreateLocalCoroutine(ref luaLinesTemplate, ThreadFuncVar, randFuncName, functionCodeLines);
 
-                        if (i < functionCodeLines.Count - 1)//dont yield before 1st code line
-                            luaLinesTemplate.Insert(functionLineIndex, "coroutine.yield()");
-                    }
-                }
-                luaLinesTemplate.Insert(functionLineIndex, ThreadFuncVar);
-                luaLinesTemplate.Insert(functionLineIndex, $"local __liveDebug_currentCodePosition_{randFuncName} = \"No calls of LiveDebug-Function\"");
-                luaLinesTemplate.Insert(functionLineIndex, $"local __liveDebug_enterPressed_{randFuncName} = false");
-
-                functionLineIndex += 4 + functionCodeLines.Count(x=> !x.Equals("platform.window:invalidate()"))*5
-                    + functionCodeLines.Count(x => x.Equals("platform.window:invalidate()")) - 1;
-
-
-                List<string> ResumeFunc = new List<string>
-                {
-                    "end", //ResumeFunc end
-
-                    "end",//second if (running && enterpressed)
-                    $"__liveDebug_enterPressed_{randFuncName} = false",
-                    funcArgs.Replace(" ", "") != string.Empty ? $"coroutine.resume({randFuncName}({funcArgs}))" : 
-                                                                                            $"coroutine.resume({randFuncName})",
-                    $"if not coroutine.running({randFuncName}) and __liveDebug_enterPressed_{randFuncName} then",
-
-
-                    "end",//if end
-                    "end)"//temp func end
-                };
-                /*re-define coroutine if dead*/
-                for (int i = 0; i < functionCodeLines.Count; i++)
-                {
-                    var localCoroutineCreateLine = functionCodeLines[i];
-                    ResumeFunc.Add(localCoroutineCreateLine);
-                    if (!localCoroutineCreateLine.Equals("platform.window:invalidate()"))
-                    {
-                        ResumeFunc.Add("[Debug]");
-                        ResumeFunc.Add("platform.window:invalidate()");
-                        ResumeFunc.Add(
-                            $"__liveDebug_currentCodePosition_{randFuncName} = \"{localCoroutineCreateLine}\"");
-
-                        if (i < functionCodeLines.Count - 1)
-                            ResumeFunc.Add("coroutine.yield()");
-                    }
-                }
-                ResumeFunc.Add(ThreadFuncVar.Replace("local ", ""));
-                ResumeFunc.Add($"if coroutine.status({randFuncName}) == \"dead\" then");
-                ResumeFunc.Add($"function ResumeFunc_{randFuncName}({funcArgs})");
-
-                
-                /*create ResumeFunction*/
-                foreach (var VARIABLE in ResumeFunc)
-                {
-                    luaLinesTemplate.Insert(functionLineIndex, VARIABLE);
-                }
-                functionLineIndex += 10 /*const*/ + functionCodeLines.Count(x => !x.Equals("platform.window:invalidate()")) * 5
-                   + functionCodeLines.Count(x => x.Equals("platform.window:invalidate()")) - 1;
+                /*Create Resume Function*/
+                LiveDebugging.CreateLocalResumeFunction(ref luaLinesTemplate, ThreadFuncVar, randFuncName, functionCodeLines, funcArgs);
 
                 /*call ResumeFunction at orignial func*/
-                luaLinesTemplate.Insert(functionLineIndex + 1, $"ResumeFunc_{randFuncName}({funcArgs})");
-
+                luaLinesTemplate.Insert(LiveDebugging.functionLineIndex + 1, $"ResumeFunc_{randFuncName}({funcArgs})");
 
                 /*set on.tabKey function up*/
-                int enterKeyFuncIndex = luaLinesTemplate.FindIndex(x => x.Contains("function ontabKey"));
-                if (enterKeyFuncIndex == -1)
-                {
-                    List<string> onTabKeySetup = new List<string>
-                    {
-                        "function ontabKey()",
-                        $"__liveDebug_enterPressed_{randFuncName} = true",
-                        $"ResumeFunc_{randFuncName}({funcArgs})",
-                        "end"
-                    };
-                    //onTabKeySetup.Reverse();
-
-                    foreach (var VARIABLE in onTabKeySetup)
-                    {
-                        luaLinesTemplate.Insert(luaLinesTemplate.Count, VARIABLE);
-                    }
-                }
-                else
-                {
-                    List<string> onTabKeySetup = new List<string>
-                    {
-                        $"__liveDebug_enterPressed_{randFuncName} = true",
-                        $"ResumeFunc_{randFuncName}({funcArgs})",
-                    };
-                    onTabKeySetup.Reverse();
-
-                    foreach (var VARIABLE in onTabKeySetup)
-                    {
-                        luaLinesTemplate.Insert(enterKeyFuncIndex + 1, VARIABLE);
-                    }
-                }
-
-                /*drawString currentCodePosition*/
-                int onpaintIndex = luaLinesTemplate.FindIndex(x => x.Contains("function onpaint"));
-                luaLinesTemplate.Insert(onpaintIndex + 1,
-                    $"gc:drawString(\"[StackTrace]\"..__liveDebug_currentCodePosition_{randFuncName}, 0 , platform.window:height() - 20, \"top\")");
+                LiveDebugging.SetOnTabKeyFunctionUp(ref luaLinesTemplate, funcArgs, randFuncName);
 
                 #endregion
             }
