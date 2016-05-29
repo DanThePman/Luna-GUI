@@ -280,8 +280,12 @@ namespace Luna_GUI._Compiling
                 line[line.IndexOf(str) + str.Length] : ')';
 
             /*varname not randomly in unknown string included*/
-            bool varNameNotInText = Regex.Matches(oneIndexEarlierThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0 &&
-                Regex.Matches(oneIndexLaterThanVarStartIndex.ToString(), @"[a-zA-Z]").Count == 0; //e.g. function hELLO()...
+            bool varNameNotInText = Regex.Matches(oneIndexEarlierThanVarStartIndex.ToString(), @"[a-zA-Z0-9]").Count == 0 &&
+                Regex.Matches(oneIndexLaterThanVarStartIndex.ToString(), @"[a-zA-Z0-9]").Count == 0; //e.g. function hELLO()...
+
+            if (varNameNotInText && (oneIndexEarlierThanVarStartIndex == '_' || oneIndexLaterThanVarStartIndex == '_'))
+                varNameNotInText = false;
+
 
             return varNameNotInText;
         }
@@ -449,6 +453,7 @@ namespace Luna_GUI._Compiling
         private static List<string> HandleFieldAttribute(List<string> luaLines, FieldAttributes fieldAttribute, int i)
         {
             int fieldIndex = i + 1;
+            bool nextLineIsScreenRefresh = luaLines[fieldIndex + 1].Equals("platform.window:invalidate()");
             List<string> luaTemplateLines = luaLines;
 
             if (fieldAttribute == FieldAttributes.Debug)
@@ -464,10 +469,18 @@ namespace Luna_GUI._Compiling
 
                 string fieldstr = luaLines[fieldIndex];
 
-                List<string> OnFieldCallFunc = new List<string>
+                List<string> OnFieldCallFunc = !nextLineIsScreenRefresh ? new List<string>
                 {
                     $"function OnFieldCall{seed}()",
                     fieldstr,
+                    "end"
+                } 
+                : 
+                new List<string>
+                {
+                    $"function OnFieldCall{seed}()",
+                    fieldstr,
+                    "platform.window:invalidate()",
                     "end"
                 };
                 OnFieldCallFunc.Reverse();
@@ -491,15 +504,16 @@ namespace Luna_GUI._Compiling
                 funcStartIndex += OnFieldCallFunc.Count + OnFieldCallFuncFail.Count;
                 fieldIndex += OnFieldCallFunc.Count + OnFieldCallFuncFail.Count;
 
-                /*clear debug attribute + field*/
+                /*clear debug attribute + field + screenUpdate?*/
                 luaTemplateLines.RemoveAt(fieldIndex - 1);
                 luaTemplateLines.RemoveAt(fieldIndex - 1);
+                if (nextLineIsScreenRefresh) luaTemplateLines.RemoveAt(fieldIndex - 1);
                 luaTemplateLines.Insert(fieldIndex - 1, $"xpcall( OnFieldCall{seed}, OnFieldCall{seed}_Fail )");
 
                 int errorHandleCount = luaTemplateLines.Count(x => x.Contains("local __errorHandleVar"));
                 luaTemplateLines.Insert(luaTemplateLines.FindIndex(
                     x => x.Contains("function onpaint")) + 1, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{seed}," +
-                                                                 $" 150, {5 * errorHandleCount}, \"top\")");
+                                                                 $" 150, {13 * errorHandleCount}, \"top\")");
             }
 
             return luaTemplateLines;
@@ -579,7 +593,7 @@ namespace Luna_GUI._Compiling
                 int errorHandleCount = luaLinesTemplate.Count(x => x.Contains("local __errorHandleVar"));
                 luaLinesTemplate.Insert(luaLinesTemplate.FindIndex(
                     x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{randFunctionSeed}, " +
-                                                                 $"150, {5 * errorHandleCount}, \"top\")");
+                                                                 $"150, {13 * errorHandleCount}, \"top\")");
                 #endregion
             }
             else if (funcAttribute == FunctionAttributes.Thread)
@@ -642,6 +656,10 @@ namespace Luna_GUI._Compiling
             else if (funcAttribute == FunctionAttributes.LiveDebug)
             {
                 #region LiveDebug
+                /*remove attribute*/
+                luaLinesTemplate.RemoveAt(functionLineIndex - 1);
+                functionLineIndex--;
+                
                 int s = luaLinesTemplate[functionLineIndex].IndexOf("function ") + 9;
                 int e = luaLinesTemplate[functionLineIndex].IndexOf("(");
                 string funcName = luaLinesTemplate[functionLineIndex].Substring(s, e - s);
@@ -670,51 +688,62 @@ namespace Luna_GUI._Compiling
                 }
                 functionCodeLines.Reverse();
 
-                /*create local corountine.create var*/
-                luaLinesTemplate.Insert(0, "end)");
-                foreach (var localCorountineCreateLine in functionCodeLines)
+                /*create local coroutine.create var*/
+                luaLinesTemplate.Insert(functionLineIndex, "end)");
+                foreach (var localCoroutineCreateLine in functionCodeLines)
                 {
-                    luaLinesTemplate.Insert(0, localCorountineCreateLine);
-                    luaLinesTemplate.Insert(0, "[Debug]");
-                    luaLinesTemplate.Insert(0, "corountine.yield()");                  
+                    luaLinesTemplate.Insert(functionLineIndex, localCoroutineCreateLine);
+                    if (!localCoroutineCreateLine.Equals("platform.window:invalidate()"))
+                    {
+                        luaLinesTemplate.Insert(functionLineIndex, "[Debug]");
+                        luaLinesTemplate.Insert(functionLineIndex, "coroutine.yield()");
+                    }
                 }
-                luaLinesTemplate.Insert(0, ThreadFuncVar);
-                luaLinesTemplate.Insert(0, $"local __liveDebug_enterPressed_{randFuncName} = false");
+                luaLinesTemplate.Insert(functionLineIndex, ThreadFuncVar);
+                luaLinesTemplate.Insert(functionLineIndex, $"local __liveDebug_enterPressed_{randFuncName} = false");
 
-                functionLineIndex += 2 + functionCodeLines.Count*3;
+                functionLineIndex += 3 + functionCodeLines.Count(x=> !x.Equals("platform.window:invalidate()"))*3 
+                    + functionCodeLines.Count(x => x.Equals("platform.window:invalidate()"));
 
-                /*create ResumeFunc*/
+
                 List<string> ResumeFunc = new List<string>
                 {
                     "end", //ResumeFunc end
 
                     "end",//second if (running && enterpressed)
                     $"__liveDebug_enterPressed_{randFuncName} = false",
-                    $"coroutine.resume({randFuncName}({funcArgs}))",
+                    funcArgs.Replace(" ", "") != string.Empty ? $"coroutine.resume({randFuncName}({funcArgs}))" : 
+                                                                                            $"coroutine.resume({randFuncName})",
                     $"if not coroutine.running({randFuncName}) and __liveDebug_enterPressed_{randFuncName} then",
 
 
                     "end",//if end
                     "end)"//temp func end
                 };
-                foreach (var localCorountineCreateLine in functionCodeLines) //already reversed
+                /*re-define coroutine if dead*/
+                foreach (var localCoroutineCreateLine in functionCodeLines) //already reversed
                 {
-                    ResumeFunc.Add(localCorountineCreateLine);
-                    ResumeFunc.Add("[Debug]");
-                    ResumeFunc.Add("corountine.yield()");
+                    ResumeFunc.Add(localCoroutineCreateLine);
+                    if (!localCoroutineCreateLine.Equals("platform.window:invalidate()"))
+                    {
+                        ResumeFunc.Add("[Debug]");
+                        ResumeFunc.Add("coroutine.yield()");
+                    }
                 }
                 ResumeFunc.Add(ThreadFuncVar.Replace("local ", ""));
                 ResumeFunc.Add($"if coroutine.status({randFuncName}) == \"dead\" then");
                 ResumeFunc.Add($"function ResumeFunc_{randFuncName}({funcArgs})");
 
-                int localVarEnd = luaLinesTemplate.FindIndex(x => x == ThreadFuncVar) + functionCodeLines.Count * 3 + 1;
+                int localVarEnd = luaLinesTemplate.FindIndex(x => x == ThreadFuncVar) + 
+                    functionCodeLines.Count(x => !x.Equals("platform.window:invalidate()")) * 3 + 
+                        functionCodeLines.Count(x => x.Equals("platform.window:invalidate()")) + 1;
                 /*create ResumeFunction*/
                 foreach (var VARIABLE in ResumeFunc)
                 {
                     luaLinesTemplate.Insert(localVarEnd + 1, VARIABLE);
                 }
 
-                functionLineIndex += 17; //const
+                functionLineIndex += ResumeFunc.Count;
 
                 /*call ResumeFunction at orignial func*/
                 luaLinesTemplate.Insert(functionLineIndex + 1, $"ResumeFunc_{randFuncName}({funcArgs})");
@@ -726,7 +755,7 @@ namespace Luna_GUI._Compiling
                 {
                     List<string> onTabKeySetup = new List<string>
                     {
-                        "function on.tabKey()",
+                        "function ontabKey()",
                         $"__liveDebug_enterPressed_{randFuncName} = true",
                         $"ResumeFunc_{randFuncName}({funcArgs})",
                         "end"
@@ -753,8 +782,6 @@ namespace Luna_GUI._Compiling
                     }
                 }
 
-                /*remove attribute*/
-                luaLinesTemplate.RemoveAt(functionLineIndex - 1);
                 #endregion
             }
 
