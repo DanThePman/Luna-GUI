@@ -705,7 +705,7 @@ namespace Luna_GUI._Compiling
                     }
                 }
                 luaLinesTemplate.Insert(functionLineIndex, ThreadFuncVar);
-                luaLinesTemplate.Insert(functionLineIndex, $"local __liveDebug_currentCodePosition_{randFuncName} = \"Not started\"");
+                luaLinesTemplate.Insert(functionLineIndex, $"local __liveDebug_currentCodePosition_{randFuncName} = \"No calls of LiveDebug-Function\"");
                 luaLinesTemplate.Insert(functionLineIndex, $"local __liveDebug_enterPressed_{randFuncName} = false");
 
                 functionLineIndex += 4 + functionCodeLines.Count(x=> !x.Equals("platform.window:invalidate()"))*5
@@ -795,7 +795,7 @@ namespace Luna_GUI._Compiling
                 /*drawString currentCodePosition*/
                 int onpaintIndex = luaLinesTemplate.FindIndex(x => x.Contains("function onpaint"));
                 luaLinesTemplate.Insert(onpaintIndex + 1,
-                    $"gc:drawString(\"[LastCall]\"..__liveDebug_currentCodePosition_{randFuncName}, 0 , platform.window:height() - 20, \"top\")");
+                    $"gc:drawString(\"[StackTrace]\"..__liveDebug_currentCodePosition_{randFuncName}, 0 , platform.window:height() - 20, \"top\")");
 
                 #endregion
             }

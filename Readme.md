@@ -98,83 +98,81 @@ end
 im Hintergrund generiert zu
 ```lua
 local testvar = 0
-local __liveDebug_enterPressed_myFuncToDebug_liveDebug684832133 = false
-local __liveDebug_currentCodePosition_myFuncToDebug_liveDebug684832133 = "Not started"
-local __errorHandleVar1397692820 = ""
-function OnFieldCall1397692820_Fail(err)
-__errorHandleVar1397692820 = tostring(err)
+local __liveDebug_enterPressed_myFuncToDebug_liveDebug1720878949 = false
+local __liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "Not started"
+local __errorHandleVar1600202380 = ""
+function OnFieldCall1600202380_Fail(err)
+__errorHandleVar1600202380 = tostring(err)
 end
-function OnFieldCall1397692820()
+function OnFieldCall1600202380()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-local __errorHandleVar683863753 = ""
-function OnFieldCall683863753_Fail(err)
-__errorHandleVar683863753 = tostring(err)
+local __errorHandleVar1546312225 = ""
+function OnFieldCall1546312225_Fail(err)
+__errorHandleVar1546312225 = tostring(err)
 end
-function OnFieldCall683863753()
+function OnFieldCall1546312225()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-local myFuncToDebug_liveDebug684832133 = coroutine.create(function ()
-coroutine.yield()
-__liveDebug_currentCodePosition_myFuncToDebug_liveDebug684832133 = "testvar = testvar + 1"
+local myFuncToDebug_liveDebug1720878949 = coroutine.create(function ()
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "testvar = testvar + 1"
 platform.window:invalidate()
-xpcall( OnFieldCall1397692820, OnFieldCall1397692820_Fail )
+xpcall( OnFieldCall1600202380, OnFieldCall1600202380_Fail )
 coroutine.yield()
-__liveDebug_currentCodePosition_myFuncToDebug_liveDebug684832133 = "testvar = testvar + 1"
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "testvar = testvar + 1"
 platform.window:invalidate()
-xpcall( OnFieldCall683863753, OnFieldCall683863753_Fail )
+xpcall( OnFieldCall1546312225, OnFieldCall1546312225_Fail )
 end)
-local __errorHandleVar968449406 = ""
-function OnFieldCall968449406_Fail(err)
-__errorHandleVar968449406 = tostring(err)
+local __errorHandleVar193951612 = ""
+function OnFieldCall193951612_Fail(err)
+__errorHandleVar193951612 = tostring(err)
 end
-function OnFieldCall968449406()
+function OnFieldCall193951612()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-local __errorHandleVar662074272 = ""
-function OnFieldCall662074272_Fail(err)
-__errorHandleVar662074272 = tostring(err)
+local __errorHandleVar412950835 = ""
+function OnFieldCall412950835_Fail(err)
+__errorHandleVar412950835 = tostring(err)
 end
-function OnFieldCall662074272()
+function OnFieldCall412950835()
 testvar = testvar + 1
 platform.window:invalidate()
 end
-function ResumeFunc_myFuncToDebug_liveDebug684832133()
-if coroutine.status(myFuncToDebug_liveDebug684832133) == "dead" then
-myFuncToDebug_liveDebug684832133 = coroutine.create(function ()
-coroutine.yield()
-__liveDebug_currentCodePosition_myFuncToDebug_liveDebug684832133 = "testvar = testvar + 1"
+function ResumeFunc_myFuncToDebug_liveDebug1720878949()
+if coroutine.status(myFuncToDebug_liveDebug1720878949) == "dead" then
+myFuncToDebug_liveDebug1720878949 = coroutine.create(function ()
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "testvar = testvar + 1"
 platform.window:invalidate()
-xpcall( OnFieldCall968449406, OnFieldCall968449406_Fail )
+xpcall( OnFieldCall193951612, OnFieldCall193951612_Fail )
 coroutine.yield()
-__liveDebug_currentCodePosition_myFuncToDebug_liveDebug684832133 = "testvar = testvar + 1"
+__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949 = "testvar = testvar + 1"
 platform.window:invalidate()
-xpcall( OnFieldCall662074272, OnFieldCall662074272_Fail )
+xpcall( OnFieldCall412950835, OnFieldCall412950835_Fail )
 end)
 end
-if not coroutine.running(myFuncToDebug_liveDebug684832133) and __liveDebug_enterPressed_myFuncToDebug_liveDebug684832133 then
-coroutine.resume(myFuncToDebug_liveDebug684832133)
-__liveDebug_enterPressed_myFuncToDebug_liveDebug684832133 = false
+if not coroutine.running(myFuncToDebug_liveDebug1720878949) and __liveDebug_enterPressed_myFuncToDebug_liveDebug1720878949 then
+coroutine.resume(myFuncToDebug_liveDebug1720878949)
+__liveDebug_enterPressed_myFuncToDebug_liveDebug1720878949 = false
 end
 end
 function myFuncToDebug()
-ResumeFunc_myFuncToDebug_liveDebug684832133()
+ResumeFunc_myFuncToDebug_liveDebug1720878949()
 end
-function onpaint(gc --[[Grafikgerät]])
-if __errorHandleVar662074272 ~= "" then gc:drawString("[DebugMode] "..__errorHandleVar662074272, 0, platform.window:height() - 20, "top") end
-if __errorHandleVar968449406 ~= "" then gc:drawString("[DebugMode] "..__errorHandleVar968449406, 0, platform.window:height() - 20, "top") end
-if __errorHandleVar683863753 ~= "" then gc:drawString("[DebugMode] "..__errorHandleVar683863753, 0, platform.window:height() - 20, "top") end
-if __errorHandleVar1397692820 ~= "" then gc:drawString("[DebugMode] "..__errorHandleVar1397692820, 0, platform.window:height() - 20, "top") end
-gc:drawString("[LastCall]"..__liveDebug_currentCodePosition_myFuncToDebug_liveDebug684832133, 0 , platform.window:height() - 20, "top")
+function on.paint(gc --[[Grafikgerät]])
+if __errorHandleVar412950835 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar412950835, 0, platform.window:height() - 20, "top") end
+if __errorHandleVar193951612 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar193951612, 0, platform.window:height() - 20, "top") end
+if __errorHandleVar1546312225 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1546312225, 0, platform.window:height() - 20, "top") end
+if __errorHandleVar1600202380 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1600202380, 0, platform.window:height() - 20, "top") end
+gc:drawString("[LastCall]"..__liveDebug_currentCodePosition_myFuncToDebug_liveDebug1720878949, 0 , platform.window:height() - 20, "top")
 myFuncToDebug()
 gc:drawString(tostring(testvar), 50, 50, "top")
 end
-function ontabKey()
-__liveDebug_enterPressed_myFuncToDebug_liveDebug684832133 = true
-ResumeFunc_myFuncToDebug_liveDebug684832133()
+function on.tabKey()
+__liveDebug_enterPressed_myFuncToDebug_liveDebug1720878949 = true
+ResumeFunc_myFuncToDebug_liveDebug1720878949()
 end
 ```
 Beinhaltet: StackTrace
