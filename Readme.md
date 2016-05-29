@@ -185,7 +185,7 @@ HttpWebrequests können nicht zu Github aufgebaut werden.
 
 ##Hinweise
 - Um das GUI in dem DevelopmentMode zu bringen, muss eine LunaGUI.debug-Datei im selben Verzeichnis existieren.
-- Beim LiveDebugging müssen alle Funktionen vor der ontabKey-Funktion declariert sein, falls eine ontabKey-Funktion vorhanden ist.
+- Beim LiveDebugging müssen alle Funktionen vor der ontabKey-Funktion deklariert sein, falls eine ontabKey-Funktion vorhanden ist.
 - Beim Debug-Attribut werden ScreenUpdate-Befehle (platform.window.invalidate()) hinter dem Feld mitübernommen.
 
 ##Setup
