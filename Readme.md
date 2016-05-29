@@ -166,8 +166,8 @@ function ontabKey()
 __liveDebug_enterPressed_myFuncToDebug_liveDebug964698839 = true
 ResumeFunc_myFuncToDebug_liveDebug964698839()
 end
-
 ```
+Fehlend: Anzeige für die aktuelle Code-Position
 
 ##Screenshots
 ![Image](https://raw.githubusercontent.com/DanThePman/Luna-GUI/master/luaGuiMenu.png)
@@ -184,10 +184,9 @@ HttpWebrequests können nicht zu Github aufgebaut werden.
 - => Keine Codesnippet-Updates
 
 ##Hinweise
--Um das GUI in dem DevelopmentMode zu bringen, muss eine LunaGUI.debug-Datei im selben Verzeichnis existieren.
--Beim LiveDebugging müssen alle Funktionen vor der ontabKey-Funktion declariert sein, falls eine ontabKey-Funktion
-vorhanden ist.
--Beim Debug-Attribut werden ScreenUpdate-Befehle (platform.window.invalidate()) hinter dem Feld mitübernommen.
+- Um das GUI in dem DevelopmentMode zu bringen, muss eine LunaGUI.debug-Datei im selben Verzeichnis existieren.
+- Beim LiveDebugging müssen alle Funktionen vor der ontabKey-Funktion declariert sein, falls eine ontabKey-Funktion vorhanden ist.
+- Beim Debug-Attribut werden ScreenUpdate-Befehle (platform.window.invalidate()) hinter dem Feld mitübernommen.
 
 ##Setup
 Systemanforderungen:
