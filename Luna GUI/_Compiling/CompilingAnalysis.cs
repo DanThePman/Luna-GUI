@@ -512,8 +512,7 @@ namespace Luna_GUI._Compiling
 
                 int errorHandleCount = luaTemplateLines.Count(x => x.Contains("local __errorHandleVar"));
                 luaTemplateLines.Insert(luaTemplateLines.FindIndex(
-                    x => x.Contains("function onpaint")) + 1, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{seed}," +
-                                                                 $" 150, {13 * errorHandleCount}, \"top\")");
+                   x => x.Contains("function onpaint")) + 1, $"if __errorHandleVar{seed} ~= \"\" then gc:drawString(\"[DebugError] \"..__errorHandleVar{seed}, 0, platform.window:height() - {20 /**errorHandleCount*/}, \"top\") end");
             }
 
             return luaTemplateLines;
@@ -592,8 +591,7 @@ namespace Luna_GUI._Compiling
 
                 int errorHandleCount = luaLinesTemplate.Count(x => x.Contains("local __errorHandleVar"));
                 luaLinesTemplate.Insert(luaLinesTemplate.FindIndex(
-                    x => x.Contains("function on.paint()")) + 2, $"gc:drawString(\"[DebugMode] \"..__errorHandleVar{randFunctionSeed}, " +
-                                                                 $"150, {13 * errorHandleCount}, \"top\")");
+                    x => x.Contains("function onpaint")) + 1, $"if __errorHandleVar{randFunctionSeed} ~= \"\" then gc:drawString(\"[DebugError] \"..__errorHandleVar{randFunctionSeed}, 0, platform.window:height() - {20 /**errorHandleCount*/}, \"top\") end");
                 #endregion
             }
             else if (funcAttribute == FunctionAttributes.Thread)
@@ -690,16 +688,20 @@ namespace Luna_GUI._Compiling
 
                 /*create local coroutine.create var*/
                 luaLinesTemplate.Insert(functionLineIndex, "end)");
-                foreach (var localCoroutineCreateLine in functionCodeLines)
+                for (int i = 0; i < functionCodeLines.Count; i++)
                 {
+                    var localCoroutineCreateLine = functionCodeLines[i];
                     luaLinesTemplate.Insert(functionLineIndex, localCoroutineCreateLine);
                     if (!localCoroutineCreateLine.Equals("platform.window:invalidate()"))
                     {
                         /*before / reversed*/
                         luaLinesTemplate.Insert(functionLineIndex, "[Debug]");
                         luaLinesTemplate.Insert(functionLineIndex, "platform.window:invalidate()");
-                        luaLinesTemplate.Insert(functionLineIndex, $"__liveDebug_currentCodePosition_{randFuncName} = \"{localCoroutineCreateLine}\"");
-                        luaLinesTemplate.Insert(functionLineIndex, "coroutine.yield()");
+                        luaLinesTemplate.Insert(functionLineIndex,
+                            $"__liveDebug_currentCodePosition_{randFuncName} = \"{localCoroutineCreateLine}\"");
+
+                        if (i < functionCodeLines.Count - 1)//dont yield before 1st code line
+                            luaLinesTemplate.Insert(functionLineIndex, "coroutine.yield()");
                     }
                 }
                 luaLinesTemplate.Insert(functionLineIndex, ThreadFuncVar);
@@ -707,7 +709,7 @@ namespace Luna_GUI._Compiling
                 luaLinesTemplate.Insert(functionLineIndex, $"local __liveDebug_enterPressed_{randFuncName} = false");
 
                 functionLineIndex += 4 + functionCodeLines.Count(x=> !x.Equals("platform.window:invalidate()"))*5
-                    + functionCodeLines.Count(x => x.Equals("platform.window:invalidate()"));
+                    + functionCodeLines.Count(x => x.Equals("platform.window:invalidate()")) - 1;
 
 
                 List<string> ResumeFunc = new List<string>
@@ -725,31 +727,33 @@ namespace Luna_GUI._Compiling
                     "end)"//temp func end
                 };
                 /*re-define coroutine if dead*/
-                foreach (var localCoroutineCreateLine in functionCodeLines) //already reversed
+                for (int i = 0; i < functionCodeLines.Count; i++)
                 {
+                    var localCoroutineCreateLine = functionCodeLines[i];
                     ResumeFunc.Add(localCoroutineCreateLine);
                     if (!localCoroutineCreateLine.Equals("platform.window:invalidate()"))
                     {
                         ResumeFunc.Add("[Debug]");
                         ResumeFunc.Add("platform.window:invalidate()");
-                        ResumeFunc.Add($"__liveDebug_currentCodePosition_{randFuncName} = \"{localCoroutineCreateLine}\"");
-                        ResumeFunc.Add("coroutine.yield()");
+                        ResumeFunc.Add(
+                            $"__liveDebug_currentCodePosition_{randFuncName} = \"{localCoroutineCreateLine}\"");
+
+                        if (i < functionCodeLines.Count - 1)
+                            ResumeFunc.Add("coroutine.yield()");
                     }
                 }
                 ResumeFunc.Add(ThreadFuncVar.Replace("local ", ""));
                 ResumeFunc.Add($"if coroutine.status({randFuncName}) == \"dead\" then");
                 ResumeFunc.Add($"function ResumeFunc_{randFuncName}({funcArgs})");
 
-                int localVarEnd = luaLinesTemplate.FindIndex(x => x == ThreadFuncVar) + 
-                    functionCodeLines.Count(x => !x.Equals("platform.window:invalidate()")) * 5 +
-                        functionCodeLines.Count(x => x.Equals("platform.window:invalidate()")) + 1;
+                
                 /*create ResumeFunction*/
                 foreach (var VARIABLE in ResumeFunc)
                 {
-                    luaLinesTemplate.Insert(localVarEnd + 1, VARIABLE);
+                    luaLinesTemplate.Insert(functionLineIndex, VARIABLE);
                 }
-
-                functionLineIndex += ResumeFunc.Count;
+                functionLineIndex += 10 /*const*/ + functionCodeLines.Count(x => !x.Equals("platform.window:invalidate()")) * 5
+                   + functionCodeLines.Count(x => x.Equals("platform.window:invalidate()")) - 1;
 
                 /*call ResumeFunction at orignial func*/
                 luaLinesTemplate.Insert(functionLineIndex + 1, $"ResumeFunc_{randFuncName}({funcArgs})");
