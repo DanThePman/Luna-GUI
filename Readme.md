@@ -37,7 +37,7 @@ a = 6
 tostring(a)
 platform.window.invalidate()
 end
-``
+```
 
 ###Debug
 ```lua
