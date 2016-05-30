@@ -248,6 +248,7 @@ HttpWebrequests können nicht zu Github aufgebaut werden.
 - => Keine Codesnippet-Updates
 
 - Windows XP
+- ```
         _____
         |   D
         |   |
@@ -257,6 +258,7 @@ HttpWebrequests können nicht zu Github aufgebaut werden.
           |_'(-------)  '-'
              |       /
       _____,-\__..__|________
+```
 
 ##Hinweise
 - Um das GUI in dem DevelopmentMode zu bringen, muss im selben Verzeichnis eine LunaGUI.debug-Datei vorhanden sein.
