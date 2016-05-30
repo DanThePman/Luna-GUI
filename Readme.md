@@ -23,7 +23,7 @@ Aktuelle Funktionen:
 
 ##Attribute
 ###ScreenUpdate
--Hängt ein ScreenRefresh-Befehl an die Funktion an
+- Hängt ein ScreenRefresh-Befehl an die Funktion an
 
 ```lua
 [ScreenUpdate]
