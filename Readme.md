@@ -248,7 +248,7 @@ HttpWebrequests können nicht zu Github aufgebaut werden.
 - => Keine Codesnippet-Updates
 
 - Windows XP
--       _____
+        _____
         |   D
         |   |
         |   |
