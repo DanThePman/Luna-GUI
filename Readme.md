@@ -23,6 +23,8 @@ Aktuelle Funktionen:
 
 ##Attribute
 ###ScreenUpdate
+-Hängt ein ScreenRefresh-Befehl an die Funktion an
+
 ```lua
 [ScreenUpdate]
 function Funktionsname()
@@ -40,6 +42,13 @@ end
 ```
 
 ###Debug
+- Versucht das Programm am Abstürzen zu hindern, sofern sich ein Fehler im folgenden Objekt befindet
+- Gibt Fehlermeldung mit "gc:drawString" aus
+- Beim Debug-Attribut werden "platform.window.invalidate()"-Befehle hinter dem Feld mitübernommen
+
+- Unterstützt keine Funktionsargumente
+- Unterstützt keinen Rückgabewert
+
 ```lua
 function on.paint( gc )
 Funktionsname()
@@ -71,6 +80,11 @@ end
 ```
 
 ###Thread
+
+- Erstellt aus einer synchron ablaufenden Funktion eine asynchron ablaufende Funktion
+- Unterstützt Funktionsargumente
+- Unterstützt Rückgabewert
+
 ```lua
 [Thread]
 function funcccccccccccc()
@@ -96,6 +110,19 @@ return ThreadCloneFunc_funcccccccccccc()
 end
 ```
 ###LiveDebugging - involviert StackTrace
+
+- Lässt die ausgewählte Funktion asynchron in Stücken ablaufen
+- Die Tab-Taste lässt die asynchrone Funktion einen Schritt weiterlaufen
+
+- Versucht das Programm am Abstürzen zu hindern, sofern sich ein Fehler in der folgenden Funktion befindet
+- Gibt den zuletzt ausgeführeten Befehl der Funktion durch das StackTrace aus
+- Gibt Fehlermeldungen mit "gc:drawString" aus
+- Zeigt Funktionsfortschritt als Ladebalken an
+
+
+- Es müssen alle Funktionen vor der on.tabKey-Funktion deklariert sein, falls eine on.tabKey-Funktion existiert.
+- Unterstützt keine Funktionsargumente
+- Unterstützt keinen Rückgabewert
 
 ![Image](https://raw.githubusercontent.com/DanThePman/Luna-GUI/master/liveDebugExplanation.png)
 ```lua
@@ -221,14 +248,12 @@ HttpWebrequests können nicht zu Github aufgebaut werden.
 - => Keine Codesnippet-Updates
 
 ##Hinweise
-- Um das GUI in dem DevelopmentMode zu bringen, muss eine LunaGUI.debug-Datei im selben Verzeichnis existieren.
-- Beim LiveDebugging müssen alle Funktionen vor der ontabKey-Funktion deklariert sein, falls eine ontabKey-Funktion vorhanden ist.
-- Beim Debug-Attribut werden ScreenUpdate-Befehle (platform.window.invalidate()) hinter dem Feld mitübernommen.
+- Um das GUI in dem DevelopmentMode zu bringen, muss im selben Verzeichnis eine LunaGUI.debug-Datei vorhanden sein.
 - Alle Attribute, die den Name "Debug" beinhalten können nur auf einzeilige Operationen angewandt werden => Schleifen als Einzeiler
 
 ##Setup
 Systemanforderungen:
 .Net 4.0 Framework oder neuer
 
-Download (nur .rar):
+Download (.rar):
 [Windows XP/Vista/7/8/10](https://github.com/DanThePman/Luna-GUI/blob/master/Luna%20GUI/bin/x86/)
