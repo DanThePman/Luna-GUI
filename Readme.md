@@ -17,11 +17,28 @@ Aktuelle Funktionen:
 - MoonSharp Lua-Compiler
 - Eventkonvertierung
 - Deklarationsüberprüfung
-- Funktions-Attribute: ScreenUpdate, Thread, Debug (in Entwicklung), LiveDebug (in Entwicklung)
+- Funktions-Attribute: ScreenUpdate, Thread, Debug , LiveDebug
 - Feld-Attribute: Debug
 
 
 ##Attribute
+###ScreenUpdate
+```lua
+[ScreenUpdate]
+function Funktionsname()
+a = 6
+tostring(a)
+end
+```
+im Hintergrund generiert zu
+```lua
+function Funktionsname()
+a = 6
+tostring(a)
+platform.window.invalidate()
+end
+``
+
 ###Debug
 ```lua
 function on.paint( gc )
@@ -52,6 +69,7 @@ function Funktionsname()
 xpcall( Funktionsname788398410, onFunction788398410_Fail )
 end
 ```
+
 ###Thread
 ```lua
 [Thread]
@@ -77,7 +95,8 @@ function funcccccccccccc()
 return ThreadCloneFunc_funcccccccccccc()
 end
 ```
-###LiveDebugging - mit StackTrace
+###LiveDebugging - involviert StackTrace
+
 ![Image](https://raw.githubusercontent.com/DanThePman/Luna-GUI/master/liveDebugExplanation.png)
 ```lua
 local testvar = 0
@@ -205,6 +224,7 @@ HttpWebrequests können nicht zu Github aufgebaut werden.
 - Um das GUI in dem DevelopmentMode zu bringen, muss eine LunaGUI.debug-Datei im selben Verzeichnis existieren.
 - Beim LiveDebugging müssen alle Funktionen vor der ontabKey-Funktion deklariert sein, falls eine ontabKey-Funktion vorhanden ist.
 - Beim Debug-Attribut werden ScreenUpdate-Befehle (platform.window.invalidate()) hinter dem Feld mitübernommen.
+- Alle Attribute, die den Name "Debug" beinhalten können nur auf einzeilige Operationen angewandt werden => Schleifen als Einzeiler
 
 ##Setup
 Systemanforderungen:
