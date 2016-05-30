@@ -1,29 +1,29 @@
 <img src="icon.png" align="right" />
 # Luna GUI
-Das Luna GUI sorgt für die Aktualisierung von Code-Snippets innerhalb der Sublime-Text-Entwicklungsumgebung, um effizienter Code 
-fuer den Taschenrechner zu erstellen und besitzt einen integrierten Compiler, der das Erstellen und übertragen von tns-Dateien 
-ermöglicht.
-Da das Drag&Drop-Verfahren simuliert wird, müssen Positionen für Buttons und Felder festgelegt werden.
-Ein OffsetFinder-Wizard im Tab "Testing" hilft beim Ermitteln der relativen Fenster- und Buttonpositionen, die gesetzt werden müssen,
-um Dateien automatisch auf den Emulator übertragen zu können.
+Das Luna GUI sorgt fÃ¼r die Aktualisierung von Code-Snippets innerhalb der Sublime-Text-Entwicklungsumgebung, um effizienter Code 
+fuer den Taschenrechner zu erstellen und besitzt einen integrierten Compiler, der das Erstellen und Ã¼bertragen von tns-Dateien 
+ermÃ¶glicht.
+Da das Drag&Drop-Verfahren simuliert wird, mÃ¼ssen Positionen fÃ¼r Buttons und Felder festgelegt werden.
+Ein OffsetFinder-Wizard im Tab "Testing" hilft beim Ermitteln der relativen Fenster- und Buttonpositionen, die gesetzt werden mÃ¼ssen,
+um Dateien automatisch auf den Emulator Ã¼bertragen zu kÃ¶nnen.
 
 Hinweise:
 - Reload-Button => Gelber Button, der im Dateiuebertragungsfenster steht
-- Zielordner-Textfeld => unter Einstellungen->Dateiübertragung das Textfeld neben "Ziel-Ordner"
+- Zielordner-Textfeld => unter Einstellungen->DateiÃ¼bertragung das Textfeld neben "Ziel-Ordner"
 - Taskleistensymbol => von Firebird
 
 ## CodeAnalyse
 Aktuelle Funktionen:
 - MoonSharp Lua-Compiler
 - Eventkonvertierung
-- Deklarationsüberprüfung
+- DeklarationsÃ¼berprÃ¼fung
 - Funktions-Attribute: ScreenUpdate, Thread, Debug , LiveDebug
 - Feld-Attribute: Debug
 
 
 ##Attribute
 ###ScreenUpdate
-- Hängt ein ScreenRefresh-Befehl an die Funktion an
+- HÃ¤ngt ein ScreenRefresh-Befehl an die Funktion an
 
 ```lua
 [ScreenUpdate]
@@ -42,12 +42,12 @@ end
 ```
 
 ###Debug
-- Versucht das Programm am Abstürzen zu hindern, sofern sich ein Fehler im folgenden Objekt befindet
+- Versucht das Programm am AbstÃ¼rzen zu hindern, sofern sich ein Fehler im folgenden Objekt befindet
 - Gibt Fehlermeldung mit "gc:drawString" aus
-- Beim Debug-Attribut werden "platform.window.invalidate()"-Befehle hinter dem Feld mitübernommen
+- Beim Debug-Attribut werden "platform.window.invalidate()"-Befehle hinter dem Feld mitÃ¼bernommen
 
-- Unterstützt keine Funktionsargumente
-- Unterstützt keinen Rückgabewert
+- UnterstÃ¼tzt keine Funktionsargumente
+- UnterstÃ¼tzt keinen RÃ¼ckgabewert
 
 ```lua
 function on.paint( gc )
@@ -82,8 +82,8 @@ end
 ###Thread
 
 - Erstellt aus einer synchron ablaufenden Funktion eine asynchron ablaufende Funktion
-- Unterstützt Funktionsargumente
-- Unterstützt Rückgabewert
+- UnterstÃ¼tzt Funktionsargumente
+- UnterstÃ¼tzt RÃ¼ckgabewert
 
 ```lua
 [Thread]
@@ -111,18 +111,18 @@ end
 ```
 ###LiveDebugging - involviert StackTrace
 
-- Lässt die ausgewählte Funktion asynchron in Stücken ablaufen
-- Die Tab-Taste lässt die asynchrone Funktion einen Schritt weiterlaufen
+- LÃ¤sst die ausgewÃ¤hlte Funktion asynchron in StÃ¼cken ablaufen
+- Die Tab-Taste lÃ¤sst die asynchrone Funktion einen Schritt weiterlaufen
 
-- Versucht das Programm am Abstürzen zu hindern, sofern sich ein Fehler in der folgenden Funktion befindet
-- Gibt den zuletzt ausgeführeten Befehl der Funktion durch das StackTrace aus
+- Versucht das Programm am AbstÃ¼rzen zu hindern, sofern sich ein Fehler in der folgenden Funktion befindet
+- Gibt den zuletzt ausgefÃ¼hreten Befehl der Funktion durch das StackTrace aus
 - Gibt Fehlermeldungen mit "gc:drawString" aus
 - Zeigt Funktionsfortschritt als Ladebalken an
 
 
-- Es müssen alle Funktionen vor der on.tabKey-Funktion deklariert sein, falls eine on.tabKey-Funktion existiert.
-- Unterstützt keine Funktionsargumente
-- Unterstützt keinen Rückgabewert
+- Es mÃ¼ssen alle Funktionen vor der on.tabKey-Funktion deklariert sein, falls eine on.tabKey-Funktion existiert.
+- UnterstÃ¼tzt keine Funktionsargumente
+- UnterstÃ¼tzt keinen RÃ¼ckgabewert
 
 ![Image](https://raw.githubusercontent.com/DanThePman/Luna-GUI/master/liveDebugExplanation.png)
 ```lua
@@ -136,7 +136,7 @@ testvar = testvar + 2
 platform.window:invalidate()
 end
 
-function on.paint(gc --[[Grafikgerät]])
+function on.paint(gc --[[GrafikgerÃ¤t]])
 myFuncToDebug()
 gc:drawString(tostring(testvar), 50, 50, "top")
 end
@@ -212,7 +212,7 @@ end
 function myFuncToDebug()
 ResumeFunc_myFuncToDebug_liveDebug1001730213()
 end
-function onpaint(gc --[[Grafikgerät]])
+function onpaint(gc --[[GrafikgerÃ¤t]])
 if __errorHandleVar1637862169 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1637862169, 0, platform.window:height() - 40, "top") end
 if __errorHandleVar1161861833 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1161861833, 0, platform.window:height() - 40, "top") end
 if __errorHandleVar1221188607 ~= "" then gc:drawString("[DebugError] "..__errorHandleVar1221188607, 0, platform.window:height() - 40, "top") end
@@ -241,15 +241,26 @@ end
 
 ##Fehler bei Windows XP
 Unable to cast COM object of type System.__ComObject to interface type X 
-- => Lösung:
+- => LÃ¶sung:
 - regsvr32 "C:\Program Files\Internet Explorer\ieproxy.dll"
 
-HttpWebrequests können nicht zu Github aufgebaut werden.
+HttpWebrequests kÃ¶nnen nicht zu Github aufgebaut werden.
 - => Keine Codesnippet-Updates
+
+- Windows XP
+-       _____
+        |   D
+        |   |
+        |   |
+        \___|            _
+          ||  _______  -( (-
+          |_'(-------)  '-'
+             |       /
+      _____,-\__..__|________
 
 ##Hinweise
 - Um das GUI in dem DevelopmentMode zu bringen, muss im selben Verzeichnis eine LunaGUI.debug-Datei vorhanden sein.
-- Alle Attribute, die den Name "Debug" beinhalten können nur auf einzeilige Operationen angewandt werden => Schleifen als Einzeiler
+- Alle Attribute, die den Name "Debug" beinhalten kÃ¶nnen nur auf einzeilige Operationen angewandt werden => Schleifen als Einzeiler
 
 ##Setup
 Systemanforderungen:
