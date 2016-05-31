@@ -28,7 +28,7 @@ namespace Luna_GUI
         public static void DragFileNDropTo_CX_CAS(string tnspath, string fileNameNoExtension)
         {
             WindowManager.BringLuaFileExplorerToFront(tnspath);
-            Thread.Sleep(1000);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 1000 : 3000);
 
             var defaultDragPoint = OffsetReader.GetSpecialClickPoint(OffsetReader.SpecialClickPoint.LuaFilePosInExplorer);
             var dragClickX = defaultDragPoint.Item1;
@@ -37,7 +37,7 @@ namespace Luna_GUI
             var destDrop = OffsetReader.GetSpecialClickPoint(OffsetReader.SpecialClickPoint.screen_mid);
 
             //WindowManager.MouseClick(dragClickX, dragClickY);
-            Thread.Sleep(100);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
             GrabForDragNDrop((int) dragClickX, (int) dragClickY, (int) destDrop.Item1, (int) destDrop.Item2);
         }
 
@@ -66,13 +66,13 @@ namespace Luna_GUI
                 }
 
                 WindowManager.TiKeyboardActionPress(OffsetReader.SpecialClickPoint.docKey);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiKeyPress(VirtualKeyCode.VK_1);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiKeyPress(VirtualKeyCode.VK_3);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiKeyPress(VirtualKeyCode.RIGHT);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiKeyPress(VirtualKeyCode.RETURN);
             });
             onFileCloseThread.SetApartmentState(ApartmentState.STA);
@@ -81,7 +81,7 @@ namespace Luna_GUI
 
         private static void OnDragging(int destx, int desty)
         {
-            Thread.Sleep(500);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 500 : 1500);
 
             var trayPos = OffsetReader.GetSpecialClickPoint(OffsetReader.SpecialClickPoint.firebirdTrayIconPos);
             var emuTaskPosX = trayPos.Item1;
@@ -95,7 +95,7 @@ namespace Luna_GUI
                 tempy += Cursor.Position.Y > emuTaskPosY ? -1 : 1;
                 Cursor.Position = new Point(tempx, tempy);
             }
-            Thread.Sleep(1500);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 1500 : 2000);
 
             while (Math.Abs(Cursor.Position.X - destx) > 2 || Math.Abs(Cursor.Position.Y - desty) > 2)
             {
@@ -104,25 +104,25 @@ namespace Luna_GUI
                 Cursor.Position = new Point(lastx, lasty);
             }
 
-            Thread.Sleep(200);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 200 : 600);
             mouse_event(leftUp, (uint) lastx, (uint) lasty, 0, 0);
 
             /*enter to confirm sending*/
-            Thread.Sleep(2000);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 2000 : 3500);
             WindowManager.TiMouseClick(Cursor.Position.X, Cursor.Position.Y);
-            Thread.Sleep(100);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
             WindowManager.TiKeyPress(VirtualKeyCode.RETURN);
             /*enter to confirm sending*/
 
-            Thread.Sleep(100);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
             WindowManager.TiKeyPress(VirtualKeyCode.VK_2);
 
             /*run file*/
-            Thread.Sleep(100);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
             WindowManager.TiKeyPress(VirtualKeyCode.RETURN);
-            Thread.Sleep(100);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
             WindowManager.TiKeyPress(VirtualKeyCode.DOWN);
-            Thread.Sleep(100);
+            Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
             WindowManager.TiKeyPress(VirtualKeyCode.RETURN);
             /*run file*/
         }

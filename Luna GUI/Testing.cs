@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using WindowsInput;
 using WindowsInput.Native;
@@ -15,10 +14,10 @@ namespace Luna_GUI
 {
     internal static class Testing
     {
-        public static bool DebugMode => 
-            WindowManager.MainWindow.GetType().Assembly.GetCustomAttributes(false).
-                OfType<DebuggableAttribute>().Select(da => da.IsJITTrackingEnabled).FirstOrDefault() ||
-            File.Exists(Environment.CurrentDirectory + "\\LunaGUI.debug");
+        public static bool DebugMode => false;
+            //WindowManager.MainWindow.GetType().Assembly.GetCustomAttributes(false).
+            //    OfType<DebuggableAttribute>().Select(da => da.IsJITTrackingEnabled).FirstOrDefault() ||
+            //File.Exists(Environment.CurrentDirectory + "\\LunaGUI.debug");
 
         public static string lunaPath = Environment.CurrentDirectory + "\\" + "luna.exe";
         public static string luapath { get; set; }
@@ -66,7 +65,7 @@ namespace Luna_GUI
                 {
                     CloseExplorerWindows();
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(!WindowManager.IsWindowsXP ? 1000 : 3000);
 
                     explorerPathToLuaFile = luapath.Substring(0, luapath.LastIndexOf("\\"));
                     Process.Start("explorer.exe", explorerPathToLuaFile);
@@ -100,13 +99,14 @@ namespace Luna_GUI
                 #region removeCxCasTrash
 
                 WindowManager.ActivateAppMaximised("TI-Nspire Emulator");
-                Thread.Sleep(500);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 500 : 1500);
 
                 var cxCasScreenPoint = OffsetReader.GetSpecialClickPoint(OffsetReader.SpecialClickPoint.screen_mid);
                 WindowManager.MouseClick(cxCasScreenPoint.Item1, cxCasScreenPoint.Item2);
 
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiKeyboardActionPress(OffsetReader.SpecialClickPoint.onKey);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiKeyPress(VirtualKeyCode.VK_2);
 
                 /*down -> delete file .. down...*/
@@ -114,10 +114,11 @@ namespace Luna_GUI
                 #endregion removeCxCasTrash
 
                 #region Create __Lua folder
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiKeyboardActionPress(OffsetReader.SpecialClickPoint.menuKey);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiKeyPress(VirtualKeyCode.VK_1);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
 
                 IEnumerable<VirtualKeyCode> tiLuaFolderName = new List<VirtualKeyCode>
                 {
@@ -130,28 +131,29 @@ namespace Luna_GUI
 
                 WindowManager.TiTextInput(tiLuaFolderName);
 
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiKeyPress(VirtualKeyCode.RETURN);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 #endregion Create __Lua folder
 
                 #region ConfigureTranferePath in Emulator
                 var settingsPos = OffsetReader.GetSpecialClickPoint(OffsetReader.SpecialClickPoint.settingsTab);
                 WindowManager.TiMouseClick(settingsPos.Item1, settingsPos.Item2);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
 
                 var dataTransfereButtonTab = OffsetReader.GetSpecialClickPoint(OffsetReader.SpecialClickPoint.dataTransfereConfiguration);
                 WindowManager.TiMouseClick(dataTransfereButtonTab.Item1, dataTransfereButtonTab.Item2);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
 
                 var pathTextBoxPos = OffsetReader.GetSpecialClickPoint(OffsetReader.SpecialClickPoint.dataTranferePathTextBox);
                 WindowManager.TiMouseClick(pathTextBoxPos.Item1, pathTextBoxPos.Item2);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
 
                 /*remove old tranfere path*/
                 for (int i = 0; i < 15; i++)
                 {
                     new InputSimulator().Keyboard.KeyPress(VirtualKeyCode.BACK);
-                    Thread.Sleep(50);
+                    Thread.Sleep(!WindowManager.IsWindowsXP ? 50 : 100);
                 }
 
                 new InputSimulator().Keyboard.TextEntry("/--lua");
@@ -167,11 +169,11 @@ namespace Luna_GUI
             for (int i = 0; i < 5; i++)
             {
                 WindowManager.TiKeyPress(VirtualKeyCode.DOWN);
-                Thread.Sleep(50);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 50 : 100);
                 WindowManager.TiKeyPress(VirtualKeyCode.BACK);
-                Thread.Sleep(50);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 50 : 100);
                 WindowManager.TiKeyPress(VirtualKeyCode.RETURN);
-                Thread.Sleep(50);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 50 : 100);
             }
         }
 
@@ -227,16 +229,16 @@ namespace Luna_GUI
 
                 /*reload button*/
                 WindowManager.ActivateAppMaximised("TI-Nspire Emulator");
-                Thread.Sleep(1000);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 1000 : 3000);
                 var dataTabPoint = OffsetReader.GetSpecialClickPoint(OffsetReader.SpecialClickPoint.dataTab);
                 var reloadPoint = OffsetReader.GetSpecialClickPoint(OffsetReader.SpecialClickPoint.reload_button);
                 WindowManager.TiMouseClick(dataTabPoint.Item1, dataTabPoint.Item2);
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
                 WindowManager.TiMouseClick(reloadPoint.Item1, reloadPoint.Item2, 500);
-                Thread.Sleep(1000);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 1000 : 3000);
                 WindowManager.TiMouseClick(reloadPoint.Item1, reloadPoint.Item2, 500);
                 /*reload button*/
-                Thread.Sleep(100);
+                Thread.Sleep(!WindowManager.IsWindowsXP ? 100 : 500);
 
                 DragNDrop.DragFileNDropTo_CX_CAS(tnsOutputPath, luafilenameNoExtension);
             });

@@ -14,6 +14,9 @@ namespace Luna_GUI
 {
     internal static class WindowManager
     {
+        public static bool IsWindowsXP => true;
+            //Environment.OSVersion.Version.Major == 5 &&
+            //                             Environment.OSVersion.Version.Minor == 1;
         public static MetroWindow MainWindow;
 
         private const int SW_SHOWMAXIMIZED = 3;
